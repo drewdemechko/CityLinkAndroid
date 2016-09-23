@@ -1,5 +1,6 @@
 package edu.uco.captainplanet.myapplication;
 
+import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -58,8 +59,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(MainActivity.this, "Clicked nav menu 4", Toast.LENGTH_SHORT).show();
                 break;
 
-            case R.id.nav_menu_logout:
-                Toast.makeText(MainActivity.this, "Clicked nav menu 5", Toast.LENGTH_SHORT).show();
+            case R.id.nav_menu_login:
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivity(loginIntent);
                 break;
         }
 
