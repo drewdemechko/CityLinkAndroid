@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/nav_menu_routes"
+        android:title="Routes"/>
+
+    <item android:id="@+id/nav_menu_favorites"
+        android:title="Favorites"/>
+
+    <item android:id="@+id/nav_menu_account"
+        android:title="Account"/>
+
+    <item android:id="@+id/nav_menu_more"
+        android:title="More...">
+
+        <menu>
+            <item android:id="@+id/nav_menu_settings"
+                android:title="Settings"/>
+
+            <item android:id="@+id/nav_menu_login"
+                android:title="Log In"/>
+        </menu>
+
+    </item>
+
+
+
+</menu>
