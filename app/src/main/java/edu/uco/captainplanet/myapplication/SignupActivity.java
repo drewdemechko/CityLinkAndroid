@@ -99,18 +99,19 @@ public class SignupActivity extends AppCompatActivity {
                     }
                     progressDialog.dismiss();
                 }
-            }, 3000);
+            }, 5000);
     }
 
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
+        UserInfoApplication.getInstance().setUsername(_emailText.getText().toString());
         finish();
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
         _signupButton.setEnabled(true);
     }
 

@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     progressDialog.dismiss();
                 }
-            }, 3000);
+            }, 5000);
     }
 
 
@@ -109,9 +109,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
+                setResult(RESULT_OK, null);
+                UserInfoApplication.getInstance().setLoggedIn(true);
+                Toast.makeText(getBaseContext(), "Signup successful! You are now logged in", Toast.LENGTH_LONG).show();
                 this.finish();
             }
         }
@@ -119,6 +119,10 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+        setResult(RESULT_OK, null);
+        UserInfoApplication.getInstance().setUsername(_emailText.getText().toString());
+        UserInfoApplication.getInstance().setLoggedIn(true);
+        Toast.makeText(getBaseContext(), "Success! You are now logged in", Toast.LENGTH_LONG).show();
         finish();
     }
 
