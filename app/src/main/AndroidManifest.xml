@@ -28,6 +28,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.uco.captainplanet.myapplication.MainActivity" />
         </activity>
+        <activity android:name=".SignupActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.uco.captainplanet.myapplication.LoginActivity" />
+        </activity>
     </application>
 
 </manifest>
