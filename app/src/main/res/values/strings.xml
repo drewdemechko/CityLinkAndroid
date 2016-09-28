@@ -2,7 +2,8 @@
     <string name="app_name">Edmond City Link</string>
     <string name="open">open</string>
     <string name="close">close</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">Log In</string>
+    <string name="title_activity_signup">Sign Up</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

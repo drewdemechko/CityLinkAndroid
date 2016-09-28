@@ -1,6 +1,7 @@
 package edu.uco.captainplanet.myapplication;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -10,12 +11,30 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import butterknife.InjectView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ActionBarDrawerToggle toggle;
     Button mapsButton;
+
+    private static final int REQUEST_LOGIN = 1;
+
+    // Update UI with new info
+    private final Handler mHandler = new Handler();
+    private final Runnable mUpdateUITimerTask = new Runnable() {
+        public void run() {
+            // Update username with login info
+            TextView t = (TextView)findViewById(R.id.nav_header_username);
+            String username = UserInfoApplication.getInstance().getUsername();
+
+            if (!username.equals("") && UserInfoApplication.getInstance().isLoggedIn())
+                t.setText(username);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +53,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         mapsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent update = new Intent(MainActivity.this, MainMapsActivity.class);
-                startActivity(update);
+                startActivityForResult(update, RESULT_OK);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Update info based on login success
+        if (requestCode == REQUEST_LOGIN) {
+            if (resultCode == RESULT_OK) {
+                // Update username after delay (in ms)
+                mHandler.postDelayed(mUpdateUITimerTask, 1);
+            }
+        }
     }
 
     @Override
@@ -74,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.nav_menu_login:
                 Intent loginIntent = new Intent(this, LoginActivity.class);
-                startActivity(loginIntent);
+                startActivityForResult(loginIntent, REQUEST_LOGIN);
                 break;
         }
 
