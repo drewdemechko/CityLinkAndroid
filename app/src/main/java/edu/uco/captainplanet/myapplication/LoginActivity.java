@@ -74,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
          * Reference: http://loopj.com/android-async-http/
         */
         AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(5000); // give enough time for client to get the JSON data
         client.get("https://uco-edmond-bus.herokuapp.com/api/userservice/users/"
                 + _emailText.getText().toString() + "/" + _passwordText.getText().toString()
                 , new JsonHttpResponseHandler() {

@@ -72,6 +72,7 @@ public class SignupActivity extends AppCompatActivity {
          * Reference: http://loopj.com/android-async-http/
         */
         AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(5000); // give enough time for client to get the JSON data
         client.get("http://uco-edmond-bus.herokuapp.com/api/userservice/users/create/"
                 + _emailText.getText().toString() + "/" + _passwordText.getText().toString() + "/client"
                 , new JsonHttpResponseHandler() {
