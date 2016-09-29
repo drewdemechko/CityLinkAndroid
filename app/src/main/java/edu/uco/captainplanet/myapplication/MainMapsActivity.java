@@ -5,12 +5,14 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.preference.PreferenceActivity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -27,6 +29,17 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.LocationListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.loopj.android.http.*;
+
+import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
+
+
 public class MainMapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -38,6 +51,8 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     private LocationRequest mLocationRequest;
     private Location mLastLocation;
     private Marker mCurrLocationMarker;
+    private ArrayList<BusStop> stops;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +66,78 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        stops = new ArrayList<>();
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(5000);
+        client.get("https://uco-edmond-bus.herokuapp.com/api/busservice/stops"
+                , new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
+                       setStops(theStops);
+
+                    }
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        Toast.makeText(getBaseContext(), "failure", Toast.LENGTH_LONG).show();
+                    }
+
+
+
+                });
+
+
+
+
+
+    }
+
+    public void setStops(JSONArray theStops)
+    {
+        try {
+
+            for(int x = 0; x < theStops.length() ; x++)
+            {
+                Log.d("theApp","forLoop");
+                BusStop currentStop = new BusStop();
+
+                if(theStops.getJSONObject(x).has("name"))
+                {
+                    currentStop.setName(theStops.getJSONObject(x).getString("name"));
+                }
+                if(theStops.getJSONObject(x).has("firstcrossstreet"))
+                {
+                    currentStop.setFirstCrossStreet(theStops.getJSONObject(x).getString("firstcrossstreet"));
+                }
+                if(theStops.getJSONObject(x).has("secondcrossstreet"))
+                {
+                    currentStop.setSecondCrossStreet(theStops.getJSONObject(x).getString("secondcrossstreet"));
+                }
+                if(theStops.getJSONObject(x).has("latitude"))
+                {
+                    currentStop.setLat(theStops.getJSONObject(x).getDouble("latitude"));
+                }
+                if(theStops.getJSONObject(x).has("longitude"))
+                {
+                    currentStop.setLongi(theStops.getJSONObject(x).getDouble("longitude"));
+                }
+                if(theStops.getJSONObject(x).has("inactive")) {
+                    currentStop.setInactive(theStops.getJSONObject(x).getBoolean("inactive"));
+                }
+                stops.add(currentStop);
+                mMap.addMarker(new MarkerOptions().position(new LatLng(currentStop.getLat(), currentStop.getLongi())).title(currentStop.getName()));
+            }
+
+
+
+
+            Toast.makeText(getBaseContext(), "success", Toast.LENGTH_LONG).show();
+
+        } catch (JSONException ex) {
+            Toast.makeText(getBaseContext(), "failure", Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+
+        }
     }
 
 
@@ -89,6 +176,8 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+
         mGoogleApiClient.connect();
     }
 
@@ -127,7 +216,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
 
         //move map camera
