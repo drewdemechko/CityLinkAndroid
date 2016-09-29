@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "461369016224-2kqk6n19thdpokk54jgnfc0nuc9avs3l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.uco.captainplanet.myapplication",
+            "certificate_hash": "3C1B692C95F3FC85BAC185C0E5EDC0903AE904A8"
+          }
+        },
+        {
           "client_id": "461369016224-nvuhgjle72olurphojd1956pm2o0m8m5.apps.googleusercontent.com",
           "client_type": 3
         },
