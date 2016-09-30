@@ -93,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_menu_account:
-                Toast.makeText(MainActivity.this, "Clicked nav menu 3", Toast.LENGTH_SHORT).show();
+                Intent accountIntent = new Intent(this, AccountActivity.class);
+                startActivity(accountIntent);
                 break;
 
             case R.id.nav_menu_settings:
