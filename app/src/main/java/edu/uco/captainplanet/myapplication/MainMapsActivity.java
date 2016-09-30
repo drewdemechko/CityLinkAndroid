@@ -131,10 +131,10 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 
 
 
-            Toast.makeText(getBaseContext(), "success", Toast.LENGTH_LONG).show();
+
 
         } catch (JSONException ex) {
-            Toast.makeText(getBaseContext(), "failure", Toast.LENGTH_LONG).show();
+            
             ex.printStackTrace();
 
         }
