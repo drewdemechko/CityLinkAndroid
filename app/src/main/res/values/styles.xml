@@ -8,4 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CityLink" parent="AppTheme" >
+        <item name="colorPrimary">@color/colorPrimary_CityLink</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_CityLink</item>
+        <item name="colorAccent">@color/colorAccent_CityLink</item>
+        <item name="android:colorBackground">@color/background_material_light_CityLink</item>
+        <item name="android:navigationBarColor">@color/cityLink_MedBlue</item>
+        <item name="android:statusBarColor">@color/cityLink_MedBlue</item>
+    </style>
+
 </resources>
