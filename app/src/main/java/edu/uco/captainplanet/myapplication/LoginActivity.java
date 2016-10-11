@@ -1,16 +1,18 @@
 package edu.uco.captainplanet.myapplication;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
-import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,14 +20,13 @@ import org.json.JSONObject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
-import com.loopj.android.http.*;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
     private static boolean auth = false;
 
-    @InjectView(R.id.input_email) EditText _emailText;
+    @InjectView(R.id.input_username) EditText _usernameText;
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_login) Button _loginButton;
     @InjectView(R.id.link_signup) TextView _signupLink;
@@ -76,13 +77,13 @@ public class LoginActivity extends AppCompatActivity {
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000); // give enough time for client to get the JSON data
         client.get("https://uco-edmond-bus.herokuapp.com/api/userservice/users/"
-                + _emailText.getText().toString() + "/" + _passwordText.getText().toString()
+                + _usernameText.getText().toString() + "/" + _passwordText.getText().toString()
                 , new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // Called when response HTTP status is "200 OK"
                 try {
-                    if (response.getString("username").equals(_emailText.getText().toString())
+                    if (response.getString("username").equals(_usernameText.getText().toString())
                             && response.getString("password").equals(_passwordText.getText().toString())) {
                         auth = true;
                     }
@@ -121,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
         setResult(RESULT_OK, null);
-        UserInfoApplication.getInstance().setUsername(_emailText.getText().toString());
+        UserInfoApplication.getInstance().setUsername(_usernameText.getText().toString());
         UserInfoApplication.getInstance().setLoggedIn(true);
         Toast.makeText(getBaseContext(), "Success! You are now logged in", Toast.LENGTH_LONG).show();
         finish();
@@ -135,14 +136,14 @@ public class LoginActivity extends AppCompatActivity {
     public boolean validate() {
         boolean valid = true;
 
-        String email = _emailText.getText().toString();
+        String username = _usernameText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("Enter a valid email address");
+        if (username.isEmpty()) {
+            _usernameText.setError("Enter a valid username");
             valid = false;
         } else {
-            _emailText.setError(null);
+            _usernameText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
