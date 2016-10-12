@@ -85,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     if (response.getString("username").equals(_usernameText.getText().toString())
                             && response.getString("password").equals(_passwordText.getText().toString())) {
+                        UserInfoApplication.getInstance().setId(response.getInt("id"));
                         auth = true;
                     }
                 } catch (JSONException ex) {

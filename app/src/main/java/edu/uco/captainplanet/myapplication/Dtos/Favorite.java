@@ -21,8 +21,9 @@ public class Favorite {
         this.name = name;
     }
 
-    public Favorite(int favoriteId, String type, String name)
+    public Favorite(int userId, int favoriteId, String type, String name)
     {
+        this.userId = userId;
         this.favoriteId = favoriteId;
         this.type = type;
         this.name = name;
