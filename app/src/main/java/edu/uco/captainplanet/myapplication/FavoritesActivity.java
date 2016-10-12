@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -107,7 +109,7 @@ public class FavoritesActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String s, Throwable throwable) {
                         // Called when response HTTP status is "400"
-                        txtPossibleFavorites.setText("Unable to pull data from server.");
+                        txtFavorites.setText("Unable to pull data from server.");
                     }
                 });
         return true;
@@ -125,20 +127,34 @@ public class FavoritesActivity extends AppCompatActivity {
                 // else
             }
             lstFavorites.setAdapter(favoritesAdapter);
+            lstFavorites.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position,
+                                               long id) {
+
+                    String item = ((TextView)view).getText().toString();
+
+                    String favoriteSelected = item.toString();
+                    for(Favorite favorite : favorites)
+                        if(favorite.toString().equals(favoriteSelected)) {
+                            if(deleteFavorite(favorite)) {
+                                favorites.remove(favorite);
+                                possibleFavorites.add(favorite);
+                                favoritesAdapter.notifyDataSetChanged();
+                                possibleFavoritesAdapter.notifyDataSetChanged();
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Unable to delete favorite, check your connection.", Toast.LENGTH_SHORT).show();
+                            }
+                        break;
+                        }
+                }
+            });
             if(favorites.isEmpty())
                 txtFavorites.setText("You currently have no favorites saved.");
         }catch(Exception e){
             e.printStackTrace();
         }
     }
-
-    //get possible favorites
-   /* public boolean getPossibleFavorites()
-    {
-        boolean temp = getBuses() && getBusStops();
-        lstPossibleFavorites.setAdapter(possibleFavoritesAdapter);
-        return temp;
-    }*/
 
     public boolean getPossibleFavorites()
     {
@@ -180,13 +196,36 @@ public class FavoritesActivity extends AppCompatActivity {
         try {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject item = new JSONObject(response.getString(i));
-                Favorite newFavorite = new Favorite(item.getInt("id"), item.getString("type"), item.getString("name"));
+                int id = UserInfoApplication.getInstance().getId();
+                Favorite newFavorite = new Favorite(id,item.getInt("id"), item.getString("type"), item.getString("name"));
                 possibleFavorites.add(newFavorite);
                 // if(possibleFavorites.isEmpty())
                 //display to user that there are no buses registered
                 // else
             }
             lstPossibleFavorites.setAdapter(possibleFavoritesAdapter);
+            lstPossibleFavorites.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position,
+                                        long id) {
+
+                    String item = ((TextView)view).getText().toString();
+
+                    String favoriteSelected = item.toString();
+                    for(Favorite favorite : possibleFavorites)
+                        if(favorite.toString().equals(favoriteSelected)) {
+                            if(addFavorite(favorite)) {
+                                possibleFavorites.remove(favorite);
+                                favorites.add(favorite);
+                                favoritesAdapter.notifyDataSetChanged();
+                                possibleFavoritesAdapter.notifyDataSetChanged();
+                            }else{
+                                Toast.makeText(getApplicationContext(), "Unable to add favorite, check your connection.", Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        }
+                }
+            });
             if(possibleFavorites.isEmpty())
                 txtPossibleFavorites.setText("You currently have all possible favorites added to your favorites.");
         }catch(Exception e){
@@ -194,82 +233,97 @@ public class FavoritesActivity extends AppCompatActivity {
         }
     }
 
-    /*public boolean getBuses()
+    public boolean deleteFavorite(final Favorite favorite)
+    {
+         /*
+         * Attempt to get JSON info
+         * Reference: http://loopj.com/android-async-http/
+        */
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(5000); // give enough time for client to get the JSON data
+
+        if(favorite.getType().equals("Bus")) {
+            client.get("https://uco-edmond-bus.herokuapp.com/api/favoriteservice/favorites/delete/bus/"
+                            + favorite.getUserid() + "/" + favorite.getFavoriteId()
+                    , new JsonHttpResponseHandler() {
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String s, Throwable throwable) {
+                            // Called when response HTTP status is "400"
+
+                            //revert changes
+                            favorites.add(favorite);
+                            possibleFavorites.remove(favorite);
+                            favoritesAdapter.notifyDataSetChanged();
+                            possibleFavoritesAdapter.notifyDataSetChanged();
+
+                            Toast.makeText(getApplicationContext(), "Unable to delete favorite, check your connection.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }else if(favorite.getType().equals("Bus Stop")) {
+            client.get("https://uco-edmond-bus.herokuapp.com/api/favoriteservice/favorites/delete/busstop/"
+                            + favorite.getUserid() + "/" + favorite.getFavoriteId()
+                    , new JsonHttpResponseHandler() {
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String s, Throwable throwable) {
+                            // Called when response HTTP status is "400"
+
+                            //revert changes
+                            favorites.add(favorite);
+                            possibleFavorites.remove(favorite);
+                            favoritesAdapter.notifyDataSetChanged();
+                            possibleFavoritesAdapter.notifyDataSetChanged();
+
+                            Toast.makeText(getApplicationContext(), "Unable to delete favorite, check your connection.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+        return true;
+    }
+
+    public boolean addFavorite(final Favorite favorite)
     {
         /*
          * Attempt to get JSON info
          * Reference: http://loopj.com/android-async-http/
         */
-       /* AsyncHttpClient client = new AsyncHttpClient();
+        AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000); // give enough time for client to get the JSON data
-        client.get("https://uco-edmond-bus.herokuapp.com/api/busservice/buses/"
-                , new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                        // Called when response HTTP status is "200 OK"
-                        try {
-                            setBuses(response);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+
+        if(favorite.getType().equals("Bus")) {
+            client.get("https://uco-edmond-bus.herokuapp.com/api/favoriteservice/favorites/create/bus/"
+                            + favorite.getUserid() + "/" + favorite.getFavoriteId()
+                    , new JsonHttpResponseHandler() {
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String s, Throwable throwable) {
+                            // Called when response HTTP status is "400"
+
+                            //revert changes
+                            possibleFavorites.add(favorite);
+                            favorites.remove(favorite);
+                            favoritesAdapter.notifyDataSetChanged();
+                            possibleFavoritesAdapter.notifyDataSetChanged();
+
+                            Toast.makeText(getApplicationContext(), "Unable to add favorite, check your connection.", Toast.LENGTH_SHORT).show();
+
                         }
-                    }
-                });
+                    });
+        }else if(favorite.getType().equals("Bus Stop")) {
+            client.get("https://uco-edmond-bus.herokuapp.com/api/favoriteservice/favorites/create/busstop/"
+                            + favorite.getUserid() + "/" + favorite.getFavoriteId()
+                    , new JsonHttpResponseHandler(){
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String s, Throwable throwable) {
+                            // Called when response HTTP status is "400"
+
+                            //revert changes
+                            possibleFavorites.add(favorite);
+                            favorites.remove(favorite);
+                            favoritesAdapter.notifyDataSetChanged();
+                            possibleFavoritesAdapter.notifyDataSetChanged();
+                            Toast.makeText(getApplicationContext(), "Unable to add favorite, check your connection.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            }
         return true;
     }
-
-    public void setBuses(JSONArray response)
-    {
-        try {
-            for (int i = 0; i < response.length(); i++) {
-                JSONObject item = new JSONObject(response.getString(i));
-                Favorite newFavorite = new Favorite(item.getInt("id"), "Bus", item.getString("name"));
-                possibleFavorites.add(newFavorite);
-                // if(possibleFavorites.isEmpty())
-                //display to user that there are no buses registered
-                // else
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public boolean getBusStops()
-    {
-        /*
-         * Attempt to get JSON info
-         * Reference: http://loopj.com/android-async-http/
-        */
-        /*AsyncHttpClient client = new AsyncHttpClient();
-        client.setTimeout(5000); // give enough time for client to get the JSON data
-        client.get("https://uco-edmond-bus.herokuapp.com/api/busstopservice/stops/"
-                , new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                        // Called when response HTTP status is "200 OK"
-                        try {
-                            setBusStops(response);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                });
-        return true;
-    }
-
-    public void setBusStops(JSONArray response)
-    {
-        try {
-            for (int i = 0; i < response.length(); i++) {
-                JSONObject item = new JSONObject(response.getString(i));
-                Favorite newFavorite = new Favorite(item.getInt("id"), "Bus Stop", item.getString("name"));
-                possibleFavorites.add(newFavorite);
-
-                // if(possibleFavorites.isEmpty())
-                //display to user that there are no buses registered
-                // else
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }*/
 }
