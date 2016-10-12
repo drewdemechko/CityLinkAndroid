@@ -143,7 +143,7 @@ public class FavoritesActivity extends AppCompatActivity {
                                 favoritesAdapter.notifyDataSetChanged();
                                 possibleFavoritesAdapter.notifyDataSetChanged();
                             }else {
-                                Toast.makeText(getApplicationContext(), "Unable to delete favorite, check your connection.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "You currently have no favorites saved.", Toast.LENGTH_SHORT).show();
                             }
                         break;
                         }
@@ -197,7 +197,7 @@ public class FavoritesActivity extends AppCompatActivity {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject item = new JSONObject(response.getString(i));
                 int id = UserInfoApplication.getInstance().getId();
-                Favorite newFavorite = new Favorite(id,item.getInt("id"), item.getString("type"), item.getString("name"));
+                Favorite newFavorite = new Favorite(id,item.getInt("favoriteId"), item.getString("type"), item.getString("name"));
                 possibleFavorites.add(newFavorite);
                 // if(possibleFavorites.isEmpty())
                 //display to user that there are no buses registered
