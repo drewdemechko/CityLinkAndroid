@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "461369016224",
+    "firebase_url": "https://citylink-6ff19.firebaseio.com",
+    "project_id": "citylink-6ff19",
+    "storage_bucket": "citylink-6ff19.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461369016224:android:d4fd44fa23496813",
+        "android_client_info": {
+          "package_name": "edu.uco.captainplanet.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "461369016224-2kqk6n19thdpokk54jgnfc0nuc9avs3l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.uco.captainplanet.myapplication",
+            "certificate_hash": "3C1B692C95F3FC85BAC185C0E5EDC0903AE904A8"
+          }
+        },
+        {
+          "client_id": "461369016224-nvuhgjle72olurphojd1956pm2o0m8m5.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "461369016224-tqfvqgak73du6lhiavovgigf3vq1iqlk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAGRmEpOMvt2jjunfo3ceADJOiJCkW8ts"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,6 +6,7 @@ public class UserInfoApplication {
     private String username;
     private String password;
     private boolean loggedIn;
+    private int id;
 
     public static synchronized UserInfoApplication getInstance() {
         if (instance == null) {
@@ -19,6 +20,10 @@ public class UserInfoApplication {
         setPassword("");
         setLoggedIn(false);
     }
+
+    public int getId(){ return id; }
+
+    public void setId(int id){this.id = id; }
 
     public String getUsername() {
         return username;
