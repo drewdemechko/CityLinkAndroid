@@ -40,7 +40,7 @@ public class FavoritesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
 
-        favorites = new ArrayList<>();
+        favorites = UserInfoApplication.getInstance().getFavorites();
         possibleFavorites = new ArrayList<>();
         lstFavorites = (ListView)findViewById(R.id.lstFavorites);
         lstPossibleFavorites = (ListView)findViewById(R.id.lstPossibleFavorites);
@@ -82,50 +82,17 @@ public class FavoritesActivity extends AppCompatActivity {
 
     public boolean getUserFavorites()
     {
-        String username;
-        username = UserInfoApplication.getInstance().getUsername();
-
-        if(username == null || username.isEmpty())
+        if(UserInfoApplication.getInstance().getFavorites().isEmpty()) {
+            txtFavorites.setText("Unable to pull data from server.");
             return false;
-
-         /*
-         * Attempt to get JSON info
-         * Reference: http://loopj.com/android-async-http/
-        */
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.setTimeout(5000); // give enough time for client to get the JSON data
-        client.get("https://uco-edmond-bus.herokuapp.com/api/favoriteservice/favorites/"
-                        + username
-                        , new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                        // Called when response HTTP status is "200 OK"
-                        try {
-                            setUserFavorites(response);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String s, Throwable throwable) {
-                        // Called when response HTTP status is "400"
-                        txtFavorites.setText("Unable to pull data from server.");
-                    }
-                });
+        }
+        setUserFavorites();
         return true;
     }
 
-    public void setUserFavorites(JSONArray response)
+    public void setUserFavorites()
     {
         try {
-            for (int i = 0; i < response.length(); i++) {
-                JSONObject item = new JSONObject(response.getString(i));
-                Favorite newFavorite = new Favorite(item.getInt("id"), item.getInt("userId"), item.getInt("favoriteId"), item.getString("type"), item.getString("name"));
-                favorites.add(newFavorite);
-                // if(favorites.isEmpty())
-                //display to user that they have no favorites
-                // else
-            }
             lstFavorites.setAdapter(favoritesAdapter);
             lstFavorites.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
@@ -158,6 +125,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
     public boolean getPossibleFavorites()
     {
+
         String username;
         username = UserInfoApplication.getInstance().getUsername();
 

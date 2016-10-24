@@ -125,6 +125,7 @@ public class LoginActivity extends AppCompatActivity {
         setResult(RESULT_OK, null);
         UserInfoApplication.getInstance().setUsername(_usernameText.getText().toString());
         UserInfoApplication.getInstance().setLoggedIn(true);
+        UserInfoApplication.getInstance().getUserFavorites();
         Toast.makeText(getBaseContext(), "Success! You are now logged in", Toast.LENGTH_LONG).show();
         finish();
     }
@@ -155,5 +156,10 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    public void assignUserFavorites()
+    {
+        UserInfoApplication.getInstance().getFavorites();
     }
 }
