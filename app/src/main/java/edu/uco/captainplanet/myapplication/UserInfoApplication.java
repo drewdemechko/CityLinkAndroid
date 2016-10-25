@@ -11,6 +11,7 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import edu.uco.captainplanet.myapplication.Dtos.Favorite;
+import edu.uco.captainplanet.myapplication.Dtos.Notification;
 
 public class UserInfoApplication {
     private static UserInfoApplication instance;
@@ -20,6 +21,7 @@ public class UserInfoApplication {
     private boolean loggedIn;
     private int id;
     private List<Favorite> myFavorites;
+    List<Notification> userSpecificNotifications;
 
     public static synchronized UserInfoApplication getInstance() {
         if (instance == null) {
@@ -33,6 +35,7 @@ public class UserInfoApplication {
         setPassword("");
         setLoggedIn(false);
         myFavorites = new ArrayList<>();
+        userSpecificNotifications = new ArrayList<>();
     }
 
     public int getId(){ return id; }
@@ -95,5 +98,10 @@ public class UserInfoApplication {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public List<Notification> getUserNotifications()
+    {
+        return userSpecificNotifications;
     }
 }
