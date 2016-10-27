@@ -39,9 +39,9 @@ public class Route {
         for(int x = 0; x < stops.length() ; x++)
         {
             try {
-                if(stops.getJSONObject(x).has("stopName"))
+                if(stops.getJSONObject(x).has("name"))
                 {
-                    String stopName = stops.getJSONObject(x).getString("stopName");
+                    String stopName = stops.getJSONObject(x).getString("name");
                     for(int y = 0 ; y < stopObjects.size() ; y++)
                     {
                         if(stopName.equals(stopObjects.get(y).getName()))

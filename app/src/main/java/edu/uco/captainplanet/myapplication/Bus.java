@@ -1,5 +1,7 @@
 package edu.uco.captainplanet.myapplication;
 
+import com.google.android.gms.maps.model.Marker;
+
 import java.util.Date;
 
 /**
@@ -15,6 +17,8 @@ public class Bus {
     private Date lastActive;
     private double lat;
     private double longi;
+    private String timeToNextStop;
+    private Marker myMarker;
 
     public Bus(String name,String route, String driver, String lastStop, boolean active, Date lastActive, double lat, double longi) {
         this.name = name;
@@ -28,6 +32,22 @@ public class Bus {
     }
 
     public Bus() {
+    }
+
+    public Marker getMyMarker() {
+        return myMarker;
+    }
+
+    public void setMyMarker(Marker myMarker) {
+        this.myMarker = myMarker;
+    }
+
+    public String getTimeToNextStop() {
+        return timeToNextStop;
+    }
+
+    public void setTimeToNextStop(String timeToNextStop) {
+        this.timeToNextStop = timeToNextStop;
     }
 
     public String getName() {
