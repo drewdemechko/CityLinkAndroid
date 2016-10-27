@@ -28,7 +28,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context arg0, Intent arg1) {
         //look for notifications based on user location
-        Toast.makeText(arg0, "I'm running", Toast.LENGTH_SHORT).show();
+        Toast.makeText(arg0, "I'm running", Toast.LENGTH_SHORT).show(); //REMOVE TOAST ONCE IMPLEMENTED
 
         //if user is logged in, search for userspecific notifications
         if(UserInfoApplication.getInstance().isLoggedIn()) {
@@ -73,15 +73,12 @@ public class NotificationReceiver extends BroadcastReceiver {
 
                 //if user has not already been notified
                 if(!(UserInfoApplication.getInstance().getUserNotifications().contains(newNotification))){
-                //for(Notification notification : UserInfoApplication.getInstance().getUserNotifications())
-                 //   if(notification.equals(newNotification)) {
-                 //       return; //an old notification
-                  //  }
+
                 UserInfoApplication.getInstance().getUserNotifications().add(newNotification);
                 //send notification
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
                 mBuilder.setSmallIcon(R.drawable.cast_ic_notification_small_icon);
-                mBuilder.setContentTitle("Notification Based on your Favorites!");
+                mBuilder.setContentTitle("Favorites Update");
                 mBuilder.setContentText(newNotification.getMessage());
 
                 NotificationManager mNotificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
