@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int interval = 10000;
 
         manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
-        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
 
     @Override
