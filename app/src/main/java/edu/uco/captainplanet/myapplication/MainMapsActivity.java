@@ -1,12 +1,14 @@
+
+
 package edu.uco.captainplanet.myapplication;
 
-import android.*;
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.preference.PreferenceActivity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -37,6 +39,8 @@ import org.json.JSONObject;
 import com.loopj.android.http.*;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -44,9 +48,11 @@ import cz.msebera.android.httpclient.Header;
 public class MainMapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener
+        LocationListener,
+        BusApiConnectorResponse
 {
 
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -57,7 +63,12 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     private Handler h = new Handler();
     private int delay = 5000; //milliseconds
     private ArrayList<Marker> busMarkers;
-
+    private Bus currentBus;
+    private Marker currentMarker = null;
+    private Routes routes;
+    private boolean busExists;
+    private String timeToNextStop;
+    private BusApiConnectorResponse me;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,27 +86,60 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         stops = new ArrayList<>();
         buses = new ArrayList<>();
         busMarkers = new ArrayList<>();
-
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.setTimeout(5000);
-        client.get("https://uco-edmond-bus.herokuapp.com/api/busservice/stops"
-                , new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
-                       setStops(theStops);
-
-                    }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
-                    }
+        routes = new Routes();
+        me = this;
 
 
 
-                });
 
 
 
+
+
+    }
+
+    public void setRoutes(JSONArray theRoutes)
+    {
+        try {
+
+            for(int x = 0; x < theRoutes.length() ; x++)
+            {
+                Log.d("theApp","forLoop");
+                Route currentRoute = new Route();
+                JSONObject routeJSON = theRoutes.getJSONObject(x);
+                if(routeJSON.has("name"))
+                {
+                    currentRoute.setName(routeJSON.getString("name"));
+                }
+                if(routeJSON.has("id"))
+                {
+                    currentRoute.setId(routeJSON.getInt("id"));
+                }
+                if(routeJSON.has("busStops"))
+                {
+                    currentRoute.setOrderedStops(routeJSON.getJSONArray("busStops"), stops);
+                }/*
+                if(theStops.getJSONObject(x).has("inactive")) {
+                    currentStop.setInactive(theStops.getJSONObject(x).getBoolean("inactive"));
+                }*/
+                routes.addRoute(currentRoute);
+            }
+
+
+
+
+
+
+
+
+        } catch (JSONException ex) {
+
+            ex.printStackTrace();
+
+        }
+
+        callAsynchronousTask();
+        /*
         h.postDelayed(new Runnable(){
             public void run(){
                 AsyncHttpClient client = new AsyncHttpClient();
@@ -105,6 +149,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, JSONArray theBuses) {
                                 setBuses(theBuses);
+
 
                             }
                             @Override
@@ -118,16 +163,10 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 
 
 
-
-
                 h.postDelayed(this, delay);
             }
         }, delay);
-
-
-
-
-
+        */
     }
 
     public void setStops(JSONArray theStops)
@@ -142,7 +181,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 if(theStops.getJSONObject(x).has("name"))
                 {
                     currentStop.setName(theStops.getJSONObject(x).getString("name"));
-                }
+                }/*
                 if(theStops.getJSONObject(x).has("firstcrossstreet"))
                 {
                     currentStop.setFirstCrossStreet(theStops.getJSONObject(x).getString("firstcrossstreet"));
@@ -150,7 +189,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 if(theStops.getJSONObject(x).has("secondcrossstreet"))
                 {
                     currentStop.setSecondCrossStreet(theStops.getJSONObject(x).getString("secondcrossstreet"));
-                }
+                }*/
                 if(theStops.getJSONObject(x).has("latitude"))
                 {
                     currentStop.setLat(theStops.getJSONObject(x).getDouble("latitude"));
@@ -158,13 +197,15 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 if(theStops.getJSONObject(x).has("longitude"))
                 {
                     currentStop.setLongi(theStops.getJSONObject(x).getDouble("longitude"));
-                }
+                }/*
                 if(theStops.getJSONObject(x).has("inactive")) {
                     currentStop.setInactive(theStops.getJSONObject(x).getBoolean("inactive"));
-                }
+                }*/
                 stops.add(currentStop);
                 mMap.addMarker(new MarkerOptions().position(new LatLng(currentStop.getLat(), currentStop.getLongi())).title(currentStop.getName()));
             }
+
+
 
 
 
@@ -176,6 +217,24 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
             ex.printStackTrace();
 
         }
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(5000);
+        client.get("https://uco-edmond-bus.herokuapp.com/api/routeservice/routes"
+                , new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray theRoutes) {
+                        setRoutes(theRoutes);
+
+                    }
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+                    }
+
+
+
+                });
     }
 
     public void setBuses(JSONArray theBuses)
@@ -186,9 +245,8 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 
             for(int x = 0; x < theBuses.length() ; x++)
             {
-                Bus currentBus;
-                Marker currentMarker = null;
-                boolean busExists = false;
+
+                busExists = false;
                 if(x >= buses.size())
                 {
                     currentBus = new Bus();
@@ -206,6 +264,11 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 {
                     currentBus.setName(theBuses.getJSONObject(x).getString("name"));
                 }
+                if(theBuses.getJSONObject(x).has("driver"))
+                {
+                    currentBus.setDriver(theBuses.getJSONObject(x).getString("driver"));
+                }
+
                 if(theBuses.getJSONObject(x).has("route"))
                 {
                     currentBus.setRoute(theBuses.getJSONObject(x).getString("route"));
@@ -214,16 +277,16 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 {
                     currentBus.setActive(theBuses.getJSONObject(x).getBoolean("active"));
                 }
-                if(theBuses.getJSONObject(x).has("laststop"))
+                if(theBuses.getJSONObject(x).has("lastStop"))
                 {
-                    currentBus.setLastStop(theBuses.getJSONObject(x).getString("laststop"));
+                    currentBus.setLastStop(theBuses.getJSONObject(x).getString("lastStop"));
                 }
-                if(theBuses.getJSONObject(x).has("lastLongitude"))
+                if(theBuses.getJSONObject(x).has("lastLong"))
                 {
-                    currentBus.setLongi(theBuses.getJSONObject(x).getDouble("lastLongitude"));
+                    currentBus.setLongi(theBuses.getJSONObject(x).getDouble("lastLong"));
                 }
-                if(theBuses.getJSONObject(x).has("lastLatitude")) {
-                    currentBus.setLat(theBuses.getJSONObject(x).getDouble("lastLatitude"));
+                if(theBuses.getJSONObject(x).has("lastLat")) {
+                    currentBus.setLat(theBuses.getJSONObject(x).getDouble("lastLat"));
                 }
 
 
@@ -235,12 +298,38 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 
                 if(currentBus.isActive())
                 {
-                    currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title(currentBus.getName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+
+                    BusStop nextStop = routes.getNextStop(currentBus.getLastStop(), currentBus.getRoute());
+
+                    AsyncHttpClient client = new AsyncHttpClient();
+                    client.setTimeout(5000);
+                    client.get("https://maps.googleapis.com/maps/api/directions/json?origin="+currentBus.getLat()+"," +
+                            ""+currentBus.getLongi()+"&destination="+nextStop.getLat()+","+nextStop.getLongi()+"&departure_time=1541202457&traffic_model=best_guess&key=AIzaSyCADdN-VW0vFCKz4uWqdL97Idk8ezENfHk"
+                            , new JsonHttpResponseHandler() {
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, JSONObject distanceObject) {
+
+                                setBusHelper(distanceObject);
+
+
+                                }
+
+
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+                                }
+
+
+
+                            });
+
                 }
 
 
 
-                if(busExists)
+                if(busExists) //this needs to be moved to the helper function and the varibles x, currentBus, mMap, and nextStop need to be passed to that function
                 {
                     Bus temp = buses.set(x,currentBus);
                     Marker tempM = busMarkers.set(x,currentMarker);
@@ -254,11 +343,6 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 
             }
 
-
-
-
-
-
         } catch (JSONException ex) {
 
             ex.printStackTrace();
@@ -266,6 +350,18 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    private void setBusHelper(JSONObject distanceObject) {
+        String timeToNextStop = "Unknown";
+        try {
+            timeToNextStop = distanceObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
+
+            currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title("Time to Next Stop:" + timeToNextStop).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      * Manipulates the map once available.
@@ -276,10 +372,52 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
+    public void callAsynchronousTask() {
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            BusApiConnector performBackgroundTask = new BusApiConnector(mMap, routes,buses, me);
+                            // PerformBackgroundTask this class is the class that extends AsynchTask
+                            performBackgroundTask.execute();
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 5000 ms
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(5000);
+        client.get("https://uco-edmond-bus.herokuapp.com/api/busstopservice/stops"
+                , new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
+                        setStops(theStops);
+
+                    }
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+                    }
+
+
+
+                });
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -305,6 +443,30 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 
 
         mGoogleApiClient.connect();
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+        {
+
+            @Override
+            public boolean onMarkerClick(Marker arg0) {
+                for(int x = 0 ; x < stops.size() ; x++)
+                {
+                    if(arg0.getTitle().equals(stops.get(x).getName()))
+                    {
+                        double lat = stops.get(x).getLat();
+                        double theLong = stops.get(x).getLongi();
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                Uri.parse("http://maps.google.com/maps?daddr="+lat+","+theLong));
+                        startActivity(intent);
+                    }
+                }
+                arg0.showInfoWindow();
+                // if marker source is clicked
+
+                return true;
+            }
+
+        });
     }
 
     @Override
@@ -355,7 +517,6 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission(){
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -421,4 +582,19 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     }
 
 
+    @Override
+    public void processFinish(ArrayList<Bus> output) {
+        for(int x = 0 ; x < output.size() ; x++)
+        {
+            currentBus = output.get(x);
+            currentMarker = currentBus.getMyMarker();
+            if(currentMarker != null)
+            {
+                currentMarker.remove();
+            }
+            currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title("Time to Next Stop:" + currentBus.getTimeToNextStop()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+            currentBus.setMyMarker(currentMarker);
+            buses.set(x,currentBus);
+        }
+    }
 }
