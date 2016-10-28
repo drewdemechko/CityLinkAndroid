@@ -1,5 +1,8 @@
 package edu.uco.captainplanet.myapplication;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     ActionBarDrawerToggle toggle;
     Button mapsButton;
+    private PendingIntent pendingIntent;
+    private AlarmManager manager;
 
     private static final int REQUEST_LOGIN = 1;
 
@@ -57,6 +62,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivityForResult(update, RESULT_OK);
             }
         });
+
+        // Retrieve a PendingIntent that will perform a broadcast
+        Intent notificationsIntent = new Intent(this, NotificationReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, notificationsIntent, 0);
+        startAlarm();
+    }
+
+    public void startAlarm() {
+        manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        int interval = 10000;
+
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
     }
 
     @Override

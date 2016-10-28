@@ -79,7 +79,19 @@
         <activity
             android:name=".MainMapsActivity"
             android:label="@string/title_activity_main_maps" />
+            <service
+                android:name=".CityLinkFirebaseMessagingService">
+                <intent-filter>
+                    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                </intent-filter>
+            </service>
         <activity android:name=".FavoritesActivity"></activity>
+        <activity android:name=".FavoritesActivity" />
+
+        <receiver
+            android:name=".NotificationReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>
