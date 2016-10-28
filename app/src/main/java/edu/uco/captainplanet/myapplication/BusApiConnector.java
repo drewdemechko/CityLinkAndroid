@@ -149,6 +149,7 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
 
                     request = new HttpGet("https://maps.googleapis.com/maps/api/directions/json?origin="+currentBus.getLat()+","+currentBus.getLongi()+"&destination="+nextStop.getLat()+","+nextStop.getLongi()+"&departure_time=1541202457&traffic_model=best_guess&key=AIzaSyCADdN-VW0vFCKz4uWqdL97Idk8ezENfHk");
                     HttpResponse httpResponse = null;
+                    String timeToNextStop = "";
                     try {
 
                         httpResponse = client.execute(request);
@@ -166,7 +167,7 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
 
                             stream.close();
                             JSONObject distanceObject = new JSONObject(result2);
-                            String timeToNextStop;
+
                             if(distanceObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").has("text"))
                             {
                                 timeToNextStop = distanceObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
@@ -176,8 +177,6 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
                                 timeToNextStop = "Unknown";
                             }
 
-
-                            currentBus.setTimeToNextStop(timeToNextStop);
                             //currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title("Time to Next Stop:" + timeToNextStop).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
                             br2.close();
@@ -187,6 +186,11 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
                         e.printStackTrace();
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    } finally {
+                        if(timeToNextStop.isEmpty()) {
+                            timeToNextStop = "Unknown";
+                        }
+                        currentBus.setTimeToNextStop(timeToNextStop);
                     }
                 }
 
