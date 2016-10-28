@@ -3,6 +3,7 @@
 package edu.uco.captainplanet.myapplication;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -70,6 +71,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     private boolean busExists;
     private String timeToNextStop;
     private BusApiConnectorResponse me;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         busMarkers = new ArrayList<>();
         routes = new Routes();
         me = this;
+        mContext = this;
 
 
 
@@ -364,13 +367,23 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 dialog.show();
             }
 
+
             currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title("Time to Next Stop:" + timeToNextStop).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
         } catch (JSONException e) {
             e.printStackTrace();
+        } finally {
+            if(timeToNextStop == "Unknown") {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("We are unable to calculate how far away your bus is. Be Ready!");
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
         }
 
     }
+
+
 
     /**
      * Manipulates the map once available.
@@ -391,8 +404,9 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            BusApiConnector performBackgroundTask = new BusApiConnector(mMap, routes,buses, me);
+                            BusApiConnector performBackgroundTask = new BusApiConnector(mMap, routes,buses, me, mContext);
                             // PerformBackgroundTask this class is the class that extends AsynchTask
+
                             performBackgroundTask.execute();
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
