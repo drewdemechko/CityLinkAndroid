@@ -12,26 +12,23 @@
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. test
-         
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!--Permissions and services for use with Firebase for push notifications -->
+    <!-- Permissions and services for use with Firebase for push notifications -->
 
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <service
-        android:name=".MyFirebaseMessagingService">
+
+    <service android:name=".MyFirebaseMessagingService">
         <intent-filter>
-            <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
         </intent-filter>
     </service>
-
-    <service
-        android:name=".MyFirebaseInstanceIDService">
+    <service android:name=".MyFirebaseInstanceIDService">
         <intent-filter>
-            <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
         </intent-filter>
     </service>
 
@@ -79,19 +76,22 @@
         <activity
             android:name=".MainMapsActivity"
             android:label="@string/title_activity_main_maps" />
-            <service
-                android:name=".CityLinkFirebaseMessagingService">
-                <intent-filter>
-                    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-                </intent-filter>
-            </service>
-        <activity android:name=".FavoritesActivity"></activity>
+
+        <service android:name=".CityLinkFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".FavoritesActivity" />
         <activity android:name=".FavoritesActivity" />
 
         <receiver
             android:name=".NotificationReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
+
+        <activity android:name=".ListRoutesActivity"></activity>
     </application>
 
 </manifest>
