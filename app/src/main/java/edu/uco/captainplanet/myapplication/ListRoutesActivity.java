@@ -1,9 +1,12 @@
 package edu.uco.captainplanet.myapplication;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -13,12 +16,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ListRoutesActivity extends Activity {
+public class ListRoutesActivity extends ListActivity {
     private Routes routes;
     private ArrayList<BusStop> stops;
+
+    private ListView listView;
+    private List<ListRowItem> rowItems;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,12 +50,30 @@ public class ListRoutesActivity extends Activity {
                 });
     }
 
+    @Override
+    public void onListItemClick(ListView l, View view, int position, long id) {
+        super.onListItemClick(l, view, position, id);
+        Toast toast = Toast.makeText(getApplicationContext(),
+                "Item " + (position + 1) + ": " + rowItems.get(position),
+                Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
+    }
+
+    public void setListRowItems() {
+        rowItems = new ArrayList<>();
+        for (int i = 0; i < routes.getRoutes().size(); i++) {
+            ListRowItem item = new ListRowItem("Bus " + i, routes.getRoutes().get(i).getName());
+            rowItems.add(item);
+        }
+    }
+
     public void setRoutes(JSONArray theRoutes)
     {
         try {
             for (int x = 0; x < theRoutes.length(); x++)
             {
-                Log.d("theApp","forLoop");
+                Log.d("setRoutes","forLoop");
                 Route currentRoute = new Route();
                 JSONObject routeJSON = theRoutes.getJSONObject(x);
                 if (routeJSON.has("name")) {
@@ -72,7 +97,7 @@ public class ListRoutesActivity extends Activity {
         try {
             for (int x = 0; x < theStops.length(); x++)
             {
-                Log.d("theApp","forLoop");
+                Log.d("setStops","forLoop");
                 BusStop currentStop = new BusStop();
 
                 if (theStops.getJSONObject(x).has("name")) {
@@ -91,9 +116,9 @@ public class ListRoutesActivity extends Activity {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray theRoutes) {
                         setRoutes(theRoutes);
-
-                        RouteArrayAdapter adapter = new RouteArrayAdapter(getApplicationContext(), routes.getRoutes());
-                        ListView listView = (ListView) findViewById(R.id.lvRoutes);
+                        setListRowItems();
+                        RouteArrayAdapter adapter = new RouteArrayAdapter(getApplicationContext(), rowItems);
+                        listView = (ListView) findViewById(android.R.id.list);
                         listView.setAdapter(adapter);
                     }
                     @Override
