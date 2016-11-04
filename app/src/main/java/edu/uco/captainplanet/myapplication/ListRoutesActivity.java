@@ -62,7 +62,7 @@ public class ListRoutesActivity extends ListActivity {
             Toast toast = Toast.makeText(getApplicationContext(),
                     "Ordered Bus Stops: " + rowItems.get(position).getBusStops(),
                     Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 200);
             toast.show();
         }
     }
