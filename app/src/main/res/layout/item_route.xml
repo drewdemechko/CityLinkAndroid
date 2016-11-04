@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp">
+    android:padding="10sp">
 
     <TextView
         android:id="@+id/tvBus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="6dp"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
         android:text="Bus Name"
         android:textColor="#000000"
         android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -20,10 +20,24 @@
         android:layout_height="wrap_content"
         android:text="Bus Route"
         android:textColor="#000000"
-        android:textSize="12sp"
+        android:textSize="16sp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_below="@+id/tvBus"
         android:layout_alignStart="@+id/tvBus"
-        android:paddingLeft="10dp"/>
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"/>
+
+    <TextView
+        android:id="@+id/tvBusStops"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bus Stops"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_below="@+id/tvRoute"
+        android:layout_alignStart="@+id/tvRoute"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"/>
 
 </RelativeLayout>

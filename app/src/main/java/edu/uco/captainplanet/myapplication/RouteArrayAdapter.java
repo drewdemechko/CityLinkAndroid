@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class RouteArrayAdapter extends ArrayAdapter<ListRowItem> {
@@ -21,6 +23,7 @@ public class RouteArrayAdapter extends ArrayAdapter<ListRowItem> {
     private static class ViewHolder {
         TextView txtBus;
         TextView txtRoute;
+        TextView txtBusStops;
     }
 
     @Override
@@ -36,6 +39,7 @@ public class RouteArrayAdapter extends ArrayAdapter<ListRowItem> {
             convertView = inflater.inflate(R.layout.item_route, parent, false);
             viewHolder.txtBus = (TextView) convertView.findViewById(R.id.tvBus);
             viewHolder.txtRoute = (TextView) convertView.findViewById(R.id.tvRoute);
+            viewHolder.txtBusStops = (TextView) convertView.findViewById(R.id.tvBusStops);
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
         } else {
@@ -46,6 +50,7 @@ public class RouteArrayAdapter extends ArrayAdapter<ListRowItem> {
         // into the template view.
         viewHolder.txtBus.setText(rowItem.getBus());
         viewHolder.txtRoute.setText(rowItem.getRoute());
+        viewHolder.txtBusStops.setText(rowItem.getBusStops());
         // Return the completed view to render on screen
         return convertView;
     }

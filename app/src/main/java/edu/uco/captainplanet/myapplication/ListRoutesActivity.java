@@ -17,7 +17,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -59,11 +58,13 @@ public class ListRoutesActivity extends ListActivity {
     @Override
     public void onListItemClick(ListView l, View view, int position, long id) {
         super.onListItemClick(l, view, position, id);
-        Toast toast = Toast.makeText(getApplicationContext(),
-                "Item " + (position + 1) + ": " + rowItems.get(position),
-                Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
-        toast.show();
+        if (!rowItems.get(position).getBusStops().equals("")) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Ordered Bus Stops: " + rowItems.get(position).getBusStops(),
+                    Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.show();
+        }
     }
 
     public void setListRowItems() {
@@ -72,9 +73,25 @@ public class ListRoutesActivity extends ListActivity {
             // match buses to routes
             for (int j = 0; j < routes.getRoutes().size(); j++) {
                 if (buses.get(i).getRoute().equals(routes.getRoutes().get(j).getName())) {
-                    ListRowItem item = new ListRowItem(buses.get(i).getName(), routes.getRoutes().get(j).getName());
+                    // get ordered bus stops based on route
+                    ArrayList<BusStop> busStops = routes.getRoutes().get(j).getOrderedStops();
+                    StringBuilder sbBusStops = new StringBuilder();
+                    for (int k = 0; k < busStops.size(); k++) {
+                        BusStop busStop = busStops.get(k);
+                        sbBusStops.append(busStop.getName());
+                        if (k != busStops.size() - 1) {
+                            sbBusStops.append(" - ");
+                        }
+                    }
+
+                    String strListBusStops = "";
+                    if (sbBusStops.length() > 0) {
+                        strListBusStops = "Ordered Bus Stops: " + sbBusStops.toString();
+                    }
+
+                    ListRowItem item = new ListRowItem(buses.get(i).getName(), routes.getRoutes().get(j).getName(), strListBusStops);
                     rowItems.add(item);
-                    break;
+                    break; // move onto next bus
                 }
             }
         }

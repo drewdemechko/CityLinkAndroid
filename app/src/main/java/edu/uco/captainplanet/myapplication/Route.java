@@ -57,6 +57,10 @@ public class Route {
         }
     }
 
+    public ArrayList<BusStop> getOrderedStops() {
+        return orderedStops;
+    }
+
     public BusStop getNextStop(String lastStop) {
         for(int x = 0; x < orderedStops.size() ; x++)
         {
