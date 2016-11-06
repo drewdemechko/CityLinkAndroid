@@ -84,7 +84,6 @@
         </service>
 
         <activity android:name=".FavoritesActivity" />
-        <activity android:name=".FavoritesActivity" />
 
         <receiver
             android:name=".NotificationReceiver"

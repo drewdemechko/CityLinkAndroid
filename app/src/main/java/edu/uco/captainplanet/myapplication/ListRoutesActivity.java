@@ -1,6 +1,7 @@
 package edu.uco.captainplanet.myapplication;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -31,6 +32,8 @@ public class ListRoutesActivity extends ListActivity {
     private ListView listView;
     private List<ListRowItem> rowItems;
 
+    private boolean doesDataExist;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,20 +42,43 @@ public class ListRoutesActivity extends ListActivity {
         routes = new Routes();
         stops = new ArrayList<>();
         buses = new ArrayList<>();
+        doesDataExist = false;
+
+        final ProgressDialog progressDialog = new ProgressDialog(ListRoutesActivity.this,
+                R.style.CityLink);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Loading Bus Routes...");
+        progressDialog.show();
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000);
         client.get("https://uco-edmond-bus.herokuapp.com/api/busstopservice/stops"
-                , new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
-                        setStops(theStops);
+            , new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
+                    setStops(theStops);
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    // do nothing
+                }
+            });
+
+        new android.os.Handler().postDelayed(
+            new Runnable() {
+                public void run() {
+                    if (doesDataExist) {
+                        // do nothing because data exists
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(),
+                                "Unable to load bus routes at this time",
+                                Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 200);
+                        toast.show();
                     }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        // do nothing
-                    }
-                });
+                    progressDialog.dismiss();
+                }
+            }, 5000);
     }
 
     @Override
@@ -76,6 +102,7 @@ public class ListRoutesActivity extends ListActivity {
                     // get ordered bus stops based on route
                     ArrayList<BusStop> busStops = routes.getRoutes().get(j).getOrderedStops();
                     StringBuilder sbBusStops = new StringBuilder();
+
                     for (int k = 0; k < busStops.size(); k++) {
                         BusStop busStop = busStops.get(k);
                         sbBusStops.append(busStop.getName());
@@ -117,16 +144,16 @@ public class ListRoutesActivity extends ListActivity {
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000);
         client.get("https://uco-edmond-bus.herokuapp.com/api/routeservice/routes"
-                , new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray theRoutes) {
-                        setRoutes(theRoutes);
-                    }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        // do nothing
-                    }
-                });
+            , new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONArray theRoutes) {
+                    setRoutes(theRoutes);
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    // do nothing
+                }
+            });
     }
 
     public void setRoutes(JSONArray theRoutes)
@@ -155,16 +182,16 @@ public class ListRoutesActivity extends ListActivity {
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000);
         client.get("https://uco-edmond-bus.herokuapp.com/api/busservice/buses"
-                , new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
-                        setBuses(theStops);
-                    }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        // do nothing
-                    }
-                });
+            , new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
+                    setBuses(theStops);
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    // do nothing
+                }
+            });
     }
 
     public void setBuses(JSONArray theBuses)
@@ -206,19 +233,20 @@ public class ListRoutesActivity extends ListActivity {
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000);
         client.get("https://uco-edmond-bus.herokuapp.com/api/busservice/buses"
-                , new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
-                        setListRowItems();
+            , new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
+                    setListRowItems();
+                    doesDataExist = true;
 
-                        RouteArrayAdapter adapter = new RouteArrayAdapter(getApplicationContext(), rowItems);
-                        listView = (ListView) findViewById(android.R.id.list);
-                        listView.setAdapter(adapter);
-                    }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        // do nothing
-                    }
-                });
+                    RouteArrayAdapter adapter = new RouteArrayAdapter(getApplicationContext(), rowItems);
+                    listView = (ListView) findViewById(android.R.id.list);
+                    listView.setAdapter(adapter);
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    // do nothing
+                }
+            });
     }
 }
