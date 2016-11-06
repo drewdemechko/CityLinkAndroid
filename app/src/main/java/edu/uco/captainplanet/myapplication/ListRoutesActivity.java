@@ -86,7 +86,7 @@ public class ListRoutesActivity extends ListActivity {
 
                     String strListBusStops = "";
                     if (sbBusStops.length() > 0) {
-                        strListBusStops = "Ordered Bus Stops: " + sbBusStops.toString();
+                        strListBusStops = sbBusStops.toString();
                     }
 
                     ListRowItem item = new ListRowItem(buses.get(i).getName(), routes.getRoutes().get(j).getName(), strListBusStops);
