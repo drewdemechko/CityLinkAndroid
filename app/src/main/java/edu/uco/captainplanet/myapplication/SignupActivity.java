@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -61,11 +62,22 @@ public class SignupActivity extends AppCompatActivity {
 
         _signupButton.setEnabled(false);
 
+        // used to find the status bar height
+        int resultHeight = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            float statusBarHeightDP = getResources().getDimension(resourceId); // get status_bar_height in density independent pixels
+            int statusBarHeightPX = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, statusBarHeightDP, getResources().getDisplayMetrics()); // convert DP to PX
+            resultHeight = getResources().getDisplayMetrics().heightPixels - statusBarHeightPX;
+        }
+
         final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.CityLink);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
+        progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
 
         /*
          * Attempt to get JSON info

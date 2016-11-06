@@ -1,9 +1,12 @@
 package edu.uco.captainplanet.myapplication;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ListView;
@@ -44,11 +47,22 @@ public class ListRoutesActivity extends ListActivity {
         buses = new ArrayList<>();
         doesDataExist = false;
 
+        // used to find the status bar height
+        int resultHeight = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            float statusBarHeightDP = getResources().getDimension(resourceId); // get status_bar_height in density independent pixels
+            int statusBarHeightPX = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, statusBarHeightDP, getResources().getDisplayMetrics()); // convert DP to PX
+            resultHeight = getResources().getDisplayMetrics().heightPixels - statusBarHeightPX;
+        }
+
         final ProgressDialog progressDialog = new ProgressDialog(ListRoutesActivity.this,
                 R.style.CityLink);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Loading Bus Routes...");
         progressDialog.show();
+        progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000);
@@ -68,8 +82,12 @@ public class ListRoutesActivity extends ListActivity {
             new Runnable() {
                 public void run() {
                     if (doesDataExist) {
-                        // do nothing because data exists
+                        // display data
+                        RouteArrayAdapter adapter = new RouteArrayAdapter(getApplicationContext(), rowItems);
+                        listView = (ListView) findViewById(android.R.id.list);
+                        listView.setAdapter(adapter);
                     } else {
+                        // show error
                         Toast toast = Toast.makeText(getApplicationContext(),
                                 "Unable to load bus routes at this time",
                                 Toast.LENGTH_SHORT);
@@ -238,10 +256,6 @@ public class ListRoutesActivity extends ListActivity {
                 public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
                     setListRowItems();
                     doesDataExist = true;
-
-                    RouteArrayAdapter adapter = new RouteArrayAdapter(getApplicationContext(), rowItems);
-                    listView = (ListView) findViewById(android.R.id.list);
-                    listView.setAdapter(adapter);
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
