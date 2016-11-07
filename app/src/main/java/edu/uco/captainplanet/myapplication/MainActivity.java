@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void startAlarm() {
         manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        int interval = 10000;
+        int interval = 1000;
 
         manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
     }
@@ -101,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case R.id.nav_menu_routes:
-                Toast.makeText(MainActivity.this, "Clicked nav menu 1", Toast.LENGTH_SHORT).show();
+                Intent routesIntent = new Intent(this, ListRoutesActivity.class);
+                startActivity(routesIntent);
                 break;
 
             case R.id.nav_menu_favorites:

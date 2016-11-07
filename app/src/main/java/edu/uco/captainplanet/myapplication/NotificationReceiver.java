@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -28,7 +27,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context arg0, Intent arg1) {
         //look for notifications based on user location
-        Toast.makeText(arg0, "I'm running", Toast.LENGTH_SHORT).show(); //REMOVE TOAST ONCE IMPLEMENTED
+        //Toast.makeText(arg0, "I'm running", Toast.LENGTH_SHORT).show(); //REMOVE TOAST ONCE IMPLEMENTED
 
         //if user is logged in, search for userspecific notifications
         if(UserInfoApplication.getInstance().isLoggedIn()) {
