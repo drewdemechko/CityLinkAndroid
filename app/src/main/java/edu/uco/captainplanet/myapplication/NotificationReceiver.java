@@ -81,7 +81,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 mBuilder.setContentTitle("Favorites Update");
                 mBuilder.setContentText(newNotification.getMessage());
 
-                NotificationManager mNotificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 mNotificationManager.notify(i, mBuilder.build());}
                 }
             } catch (JSONException e) {
