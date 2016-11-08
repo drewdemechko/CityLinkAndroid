@@ -354,9 +354,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         String timeToNextStop = "Unknown";
         try {
             timeToNextStop = distanceObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
-
             currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title("Time to Next Stop:" + timeToNextStop).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

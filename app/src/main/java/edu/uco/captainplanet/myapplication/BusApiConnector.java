@@ -147,7 +147,7 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
                     BusStop nextStop = routes.getNextStop(currentBus.getLastStop(), currentBus.getRoute());
 
 
-                    request = new HttpGet("https://maps.googleapis.com/maps/api/directions/json?origin="+currentBus.getLat()+","+currentBus.getLongi()+"&destination="+nextStop.getLat()+","+nextStop.getLongi()+"&departure_time=1541202457&traffic_model=best_guess&key=AIzaSyCADdN-VW0vFCKz4uWqdL97Idk8ezENfHk");
+                    request = new HttpGet("https://maps.googleapis.com/maps/api/directions/json?origin="+currentBus.getLat()+","+currentBus.getLongi()+"&destination="+nextStop.getLat()+","+nextStop.getLongi()+"&departure_time=1541202457&traffic_model=best_guess&key=AIzaSyCfC5ysuEcXxST1zuFkLEWMVT8OyYxbtlw");
                     HttpResponse httpResponse = null;
                     try {
 
