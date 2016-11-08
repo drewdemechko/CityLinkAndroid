@@ -40,6 +40,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.loopj.android.http.*;
+
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
