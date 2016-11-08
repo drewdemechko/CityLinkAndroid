@@ -3,23 +3,26 @@
 package edu.uco.captainplanet.myapplication;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,13 +33,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.location.LocationListener;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.loopj.android.http.*;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -69,6 +71,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     private boolean busExists;
     private String timeToNextStop;
     private BusApiConnectorResponse me;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +91,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         busMarkers = new ArrayList<>();
         routes = new Routes();
         me = this;
+        mContext = this;
 
 
 
@@ -355,13 +359,31 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         try {
             timeToNextStop = distanceObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
 
+            int timeNumToNextStop = Integer.getInteger(timeToNextStop.substring(0, timeToNextStop.length() - 4));
+            if(timeNumToNextStop < 10) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("The bus is only " + timeToNextStop + " away.");
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+
             currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title("Time to Next Stop:" + timeToNextStop).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
         } catch (JSONException e) {
             e.printStackTrace();
+        } finally {
+            if(timeToNextStop == "Unknown") {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("We are unable to calculate how far away your bus is. Be Ready!");
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
         }
 
     }
+
+
 
     /**
      * Manipulates the map once available.
@@ -382,8 +404,9 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            BusApiConnector performBackgroundTask = new BusApiConnector(mMap, routes,buses, me);
+                            BusApiConnector performBackgroundTask = new BusApiConnector(mMap, routes,buses, me, mContext);
                             // PerformBackgroundTask this class is the class that extends AsynchTask
+
                             performBackgroundTask.execute();
                         } catch (Exception e) {
                             // TODO Auto-generated catch block

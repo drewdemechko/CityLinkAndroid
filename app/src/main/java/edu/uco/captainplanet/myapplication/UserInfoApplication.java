@@ -30,6 +30,10 @@ public class UserInfoApplication {
         return instance;
     }
 
+    public static synchronized void logout() {
+        instance = new UserInfoApplication();
+    }
+
     private UserInfoApplication() {
         setUsername("");
         setPassword("");

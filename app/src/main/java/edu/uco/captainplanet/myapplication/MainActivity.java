@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Update info based on login success
         if (requestCode == REQUEST_LOGIN) {
             if (resultCode == RESULT_OK) {
+
                 // Update username after delay (in ms)
                 mHandler.postDelayed(mUpdateUITimerTask, 1);
             }
@@ -120,8 +121,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_menu_login:
-                Intent loginIntent = new Intent(this, LoginActivity.class);
-                startActivityForResult(loginIntent, REQUEST_LOGIN);
+                if(item.getTitle() != "Logout") {
+                    Intent loginIntent = new Intent(this, LoginActivity.class);
+                    item.setTitle("Logout");
+                    startActivityForResult(loginIntent, REQUEST_LOGIN);
+                } else {
+                    UserInfoApplication.logout();
+                    item.setTitle("Log In");
+                }
+
                 break;
         }
 
