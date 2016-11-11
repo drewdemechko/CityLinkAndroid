@@ -40,8 +40,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.loopj.android.http.*;
-
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -65,12 +63,13 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     private ArrayList<BusStop> stops;
     private ArrayList<Bus> buses;
     private Handler h = new Handler();
-    private int delay = 5000; //milliseconds
+    private final int delay = 5000; //milliseconds
     private ArrayList<Marker> busMarkers;
     private Bus currentBus;
     private Marker currentMarker = null;
     private Routes routes;
     private boolean busExists;
+    private boolean busClosestExists;
     private String timeToNextStop;
     private BusApiConnectorResponse me;
     private Context mContext;
@@ -94,14 +93,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         routes = new Routes();
         me = this;
         mContext = this;
-
-
-
-
-
-
-
-
+        busClosestExists = false;
     }
 
     public void setRoutes(JSONArray theRoutes)
@@ -225,7 +217,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         }
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.setTimeout(5000);
+        client.setTimeout(delay);
         client.get("https://uco-edmond-bus.herokuapp.com/api/routeservice/routes"
                 , new JsonHttpResponseHandler() {
                     @Override
@@ -308,15 +300,14 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                     BusStop nextStop = routes.getNextStop(currentBus.getLastStop(), currentBus.getRoute());
 
                     AsyncHttpClient client = new AsyncHttpClient();
-                    client.setTimeout(5000);
+                    client.setTimeout(delay);
                     client.get("https://maps.googleapis.com/maps/api/directions/json?origin="+currentBus.getLat()+"," +
                             ""+currentBus.getLongi()+"&destination="+nextStop.getLat()+","+nextStop.getLongi()+"&departure_time=1541202457&traffic_model=best_guess&key=AIzaSyCADdN-VW0vFCKz4uWqdL97Idk8ezENfHk"
                             , new JsonHttpResponseHandler() {
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, JSONObject distanceObject) {
 
-                                setBusHelper(distanceObject);
-
+                                    setBusHelper(distanceObject);
 
                                 }
 
@@ -362,7 +353,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
             timeToNextStop = distanceObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
 
             int timeNumToNextStop = Integer.getInteger(timeToNextStop.substring(0, timeToNextStop.length() - 4));
-            if(timeNumToNextStop < 10) {
+            if(timeNumToNextStop < 10 && busClosestExists == false) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("The bus is only " + timeToNextStop + " away.");
                 AlertDialog dialog = builder.create();

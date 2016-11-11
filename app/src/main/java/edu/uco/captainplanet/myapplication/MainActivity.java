@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     UserInfoApplication.logout();
                     item.setTitle("Log In");
+                    ((TextView)findViewById(R.id.nav_header_username)).setText("");
                 }
 
                 break;

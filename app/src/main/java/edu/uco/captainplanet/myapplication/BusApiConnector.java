@@ -2,7 +2,6 @@ package edu.uco.captainplanet.myapplication;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -243,7 +242,7 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
     @Override
     protected void onPostExecute(ArrayList<Bus> result) {
         delegate.processFinish(result);
-        if(!dialogIsShown) {
+/*        if(!dialogIsShown) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             if (busTimeToStop != null || busTimeToStop != null) {
                 builder.setMessage("The closest bus is " + shortBus.getName() + ". It is " + busTimeToStop
@@ -254,7 +253,7 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
             AlertDialog dialog = builder.create();
             dialogIsShown = true;
             dialog.show();
-        }
+        }*/
     }
 
 
