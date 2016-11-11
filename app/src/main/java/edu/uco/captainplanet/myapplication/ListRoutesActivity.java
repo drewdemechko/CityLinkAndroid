@@ -62,7 +62,7 @@ public class ListRoutesActivity extends ListActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Loading Bus Routes...");
         progressDialog.show();
-        progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
+        //progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000);
@@ -102,6 +102,7 @@ public class ListRoutesActivity extends ListActivity {
     @Override
     public void onListItemClick(ListView l, View view, int position, long id) {
         super.onListItemClick(l, view, position, id);
+        /*
         if (!rowItems.get(position).getBusStops().equals("")) {
             Toast toast = Toast.makeText(getApplicationContext(),
                     "Ordered Bus Stops: " + rowItems.get(position).getBusStops(),
@@ -109,6 +110,7 @@ public class ListRoutesActivity extends ListActivity {
             toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 200);
             toast.show();
         }
+        */
     }
 
     public void setListRowItems() {
