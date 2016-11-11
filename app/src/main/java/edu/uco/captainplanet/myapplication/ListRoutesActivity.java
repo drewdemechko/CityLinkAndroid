@@ -62,7 +62,7 @@ public class ListRoutesActivity extends ListActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Loading Bus Routes...");
         progressDialog.show();
-        progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
+        //progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000);
