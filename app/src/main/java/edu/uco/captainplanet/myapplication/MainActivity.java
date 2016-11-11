@@ -16,9 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -142,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             UserInfoApplication.logout();
             updateMenu();
-            //item.setTitle("Log In");
+            ((TextView) findViewById(R.id.nav_header_username)).setText("");
 
         }
 
