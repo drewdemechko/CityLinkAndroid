@@ -59,27 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        Menu drawerMenu = navigationView.getMenu();
-        drawerMenu.clear();
-        if(UserInfoApplication.getInstance().isLoggedIn())
-        {
-            drawerMenu.add("Bus Map");
-            drawerMenu.add("Bus Routes");
-            drawerMenu.add("Favorites");
-            drawerMenu.add("My Account");
-            drawerMenu.add("Settings");
-            drawerMenu.add("Logout");
-        }
-        else
-        {
-            drawerMenu.add("Bus Map");
-            drawerMenu.add("Bus Routes");
-            drawerMenu.add("Login");
-
-        }
+        updateMenu();
 
         mapsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -161,7 +141,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else if(item.getTitle().equals("Logout"))
         {
             UserInfoApplication.logout();
-            item.setTitle("Log In");
+            updateMenu();
+            //item.setTitle("Log In");
 
         }
 
@@ -213,6 +194,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
+        updateMenu();
+
+    }
+
+    private void updateMenu()
+    {
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -234,6 +221,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawerMenu.add("Login");
 
         }
-
     }
 }
