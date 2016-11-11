@@ -77,7 +77,7 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
-        progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
+        //progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
 
         /*
          * Attempt to get JSON info
