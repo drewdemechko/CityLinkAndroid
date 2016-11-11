@@ -50,14 +50,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapsButton = (Button) findViewById(R.id.googleMapsButton);
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
-        navigationView.setNavigationItemSelectedListener(this);
+        updateMenu();
 
         mapsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Update info based on login success
         if (requestCode == REQUEST_LOGIN) {
             if (resultCode == RESULT_OK) {
+
                 // Update username after delay (in ms)
                 mHandler.postDelayed(mUpdateUITimerTask, 1);
             }
@@ -139,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             UserInfoApplication.logout();
             updateMenu();
+            //item.setTitle("Log In");
 
         }
 
@@ -177,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
         }
-
+*/
         // After clicking on an option, close the nav menu
         DrawerLayout dl = (DrawerLayout) findViewById(R.id.drawerLayout);
         if (dl.isDrawerOpen(GravityCompat.START)) {
@@ -185,5 +189,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        updateMenu();
+
+    }
+
+    private void updateMenu()
+    {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        Menu drawerMenu = navigationView.getMenu();
+        drawerMenu.clear();
+        if(UserInfoApplication.getInstance().isLoggedIn())
+        {
+            drawerMenu.add("Bus Map");
+            drawerMenu.add("Bus Routes");
+            drawerMenu.add("Favorites");
+            drawerMenu.add("My Account");
+            drawerMenu.add("Settings");
+            drawerMenu.add("Logout");
+        }
+        else
+        {
+            drawerMenu.add("Bus Map");
+            drawerMenu.add("Bus Routes");
+            drawerMenu.add("Login");
+
+        }
     }
 }
