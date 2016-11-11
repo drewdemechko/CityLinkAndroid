@@ -11,11 +11,14 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void startAlarm() {
         manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        int interval = 10000;
+        int interval = 1000;
 
         manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
     }
@@ -81,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Update info based on login success
         if (requestCode == REQUEST_LOGIN) {
             if (resultCode == RESULT_OK) {
+
                 // Update username after delay (in ms)
                 mHandler.postDelayed(mUpdateUITimerTask, 1);
             }
@@ -99,9 +103,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case R.id.nav_menu_routes:
-                Toast.makeText(MainActivity.this, "Clicked nav menu 1", Toast.LENGTH_SHORT).show();
+        if(item.getTitle().equals("Bus Routes"))
+        {
+            Intent routesIntent = new Intent(this, ListRoutesActivity.class);
+            startActivity(routesIntent);
+        }
+        else if(item.getTitle().equals("Bus Map"))
+        {
+            Intent update = new Intent(MainActivity.this, MainMapsActivity.class);
+            startActivityForResult(update, RESULT_OK);
+        }
+        else if(item.getTitle().equals("Favorites"))
+        {
+            Intent favoritesIntent = new Intent(this, FavoritesActivity.class);
+            startActivity(favoritesIntent);
+        }
+        else if(item.getTitle().equals("My Account"))
+        {
+            Intent accountIntent = new Intent(this, AccountActivity.class);
+            startActivity(accountIntent);
+        }
+        else if(item.getTitle().equals("Settings"))
+        {
+
+        }
+        else if(item.getTitle().equals("Login"))
+        {
+
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            item.setTitle("Logout");
+            startActivityForResult(loginIntent, REQUEST_LOGIN);
+
+
+        }
+        else if(item.getTitle().equals("Logout"))
+        {
+            UserInfoApplication.logout();
+            updateMenu();
+
+        }
+
+        /* had  change from case to if else since you have to have a contant expressions for comparisson
+        switch (item.getTitle() ) {
+
+
+            case getString(R.string.bus_routes):
+                Intent routesIntent = new Intent(this, ListRoutesActivity.class);
+                startActivity(routesIntent);
                 break;
 
             case R.id.nav_menu_favorites:
@@ -119,8 +167,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_menu_login:
-                Intent loginIntent = new Intent(this, LoginActivity.class);
-                startActivityForResult(loginIntent, REQUEST_LOGIN);
+                if(item.getTitle() != "Logout") {
+                    Intent loginIntent = new Intent(this, LoginActivity.class);
+                    item.setTitle("Logout");
+                    startActivityForResult(loginIntent, REQUEST_LOGIN);
+                } else {
+                    UserInfoApplication.logout();
+                    item.setTitle("Log In");
+                }
+
                 break;
         }
 
