@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void startAlarm() {
         manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        int interval = 1000;
+        int interval = 10000;
 
         manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
     }
@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Update info based on login success
         if (requestCode == REQUEST_LOGIN) {
             if (resultCode == RESULT_OK) {
-
                 // Update username after delay (in ms)
                 mHandler.postDelayed(mUpdateUITimerTask, 1);
             }

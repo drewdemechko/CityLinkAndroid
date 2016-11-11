@@ -83,7 +83,7 @@ public class CityLinkFirebaseMessagingService extends FirebaseMessagingService {
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle("FCM Message")
+                .setContentTitle("CityLink")
                 .setSmallIcon(R.drawable.cast_ic_notification_1)
                 .setContentText(messageBody)
                 .setAutoCancel(true)

@@ -1,19 +1,20 @@
 package edu.uco.captainplanet.myapplication;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,13 +38,20 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
     private Marker currentMarker = null;
     private ArrayList<Marker> busMarkers;
     public BusApiConnectorResponse delegate;
+    private String busTimeToStop;
+    private Bus shortBus;
+    Context mContext;
+    private boolean dialogIsShown;
 
-    public BusApiConnector(GoogleMap mMap, Routes routes, ArrayList<Bus> buses, BusApiConnectorResponse delegate) {
+
+    public BusApiConnector(GoogleMap mMap, Routes routes, ArrayList<Bus> buses, BusApiConnectorResponse delegate, Context context) {
         this.mMap = mMap;
         this.routes = routes;
         this.buses = buses;
         client = new DefaultHttpClient();
         this.delegate = delegate;
+        this.mContext = context;
+        this.dialogIsShown = false;
     }
 
     @Override
@@ -86,6 +94,9 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
         JSONArray theBuses = new JSONArray(result);
 
         try {
+
+            int numTime = 200;
+            shortBus = null;
 
             for(int x = 0; x < theBuses.length() ; x++)
             {
@@ -147,8 +158,9 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
                     BusStop nextStop = routes.getNextStop(currentBus.getLastStop(), currentBus.getRoute());
 
 
-                    request = new HttpGet("https://maps.googleapis.com/maps/api/directions/json?origin="+currentBus.getLat()+","+currentBus.getLongi()+"&destination="+nextStop.getLat()+","+nextStop.getLongi()+"&departure_time=1541202457&traffic_model=best_guess&key=AIzaSyCADdN-VW0vFCKz4uWqdL97Idk8ezENfHk");
+                    request = new HttpGet("https://maps.googleapis.com/maps/api/directions/json?origin="+currentBus.getLat()+","+currentBus.getLongi()+"&destination="+nextStop.getLat()+","+nextStop.getLongi()+"&departure_time=1541202457&traffic_model=best_guess&key=AIzaSyCfC5ysuEcXxST1zuFkLEWMVT8OyYxbtlw");
                     HttpResponse httpResponse = null;
+                    String timeToNextStop = "";
                     try {
 
                         httpResponse = client.execute(request);
@@ -166,7 +178,7 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
 
                             stream.close();
                             JSONObject distanceObject = new JSONObject(result2);
-                            String timeToNextStop;
+
                             if(distanceObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").has("text"))
                             {
                                 timeToNextStop = distanceObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
@@ -176,17 +188,26 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
                                 timeToNextStop = "Unknown";
                             }
 
-
-                            currentBus.setTimeToNextStop(timeToNextStop);
                             //currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title("Time to Next Stop:" + timeToNextStop).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
+                            if(Integer.getInteger(timeToNextStop, 200) <= numTime ) {
+                                busTimeToStop = timeToNextStop;
+                                shortBus = currentBus;
+                            }
                             br2.close();
+
+
                         }
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    } finally {
+                        if(timeToNextStop.isEmpty()) {
+                            timeToNextStop = "Unknown";
+                        }
+                        currentBus.setTimeToNextStop(timeToNextStop);
                     }
                 }
 
@@ -214,6 +235,7 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
 
         br.close();
 
+
         return buses;
     }
 
@@ -221,7 +243,22 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
     @Override
     protected void onPostExecute(ArrayList<Bus> result) {
         delegate.processFinish(result);
+        if(!dialogIsShown) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            if (busTimeToStop != null || busTimeToStop != null) {
+                builder.setMessage("The closest bus is " + shortBus.getName() + ". It is " + busTimeToStop
+                        + " away.");
+            } else {
+                builder.setMessage("We cannot determine the closest bus at this time.");
+            }
+            AlertDialog dialog = builder.create();
+            dialogIsShown = true;
+            dialog.show();
+        }
     }
+
+
+
 
 
 }
