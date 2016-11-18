@@ -31,6 +31,8 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
+        _updateButton = (Button)  findViewById(R.id.btn_updateAccount);
+
         _updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
