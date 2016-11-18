@@ -112,6 +112,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent update = new Intent(MainActivity.this, MainMapsActivity.class);
             startActivityForResult(update, RESULT_OK);
         }
+        else if(item.getTitle().equals("Bus List"))
+        {
+            Intent accountIntent = new Intent(this, BusListActivity.class);
+            startActivity(accountIntent);
+        }
         else if(item.getTitle().equals("Favorites"))
         {
             Intent favoritesIntent = new Intent(this, FavoritesActivity.class);
@@ -124,7 +129,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if(item.getTitle().equals("Settings"))
         {
-
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
         }
         else if(item.getTitle().equals("Login"))
         {
@@ -207,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             drawerMenu.add("Bus Map");
             drawerMenu.add("Bus Routes");
+            drawerMenu.add("Bus List");
             drawerMenu.add("Favorites");
             drawerMenu.add("My Account");
             drawerMenu.add("Settings");
@@ -216,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             drawerMenu.add("Bus Map");
             drawerMenu.add("Bus Routes");
+            drawerMenu.add("Bus List");
             drawerMenu.add("Login");
 
         }

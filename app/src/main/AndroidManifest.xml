@@ -76,6 +76,12 @@
         <activity
             android:name=".MainMapsActivity"
             android:label="@string/title_activity_main_maps" />
+        <activity
+            android:name=".AccountActivity"
+            android:label="Account Detail" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Account Detail" />
 
         <service android:name=".CityLinkFirebaseMessagingService">
             <intent-filter>
@@ -90,7 +96,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ListRoutesActivity"></activity>
+        <activity android:name=".ListRoutesActivity" />
+        <activity android:name=".BusListActivity"></activity>
     </application>
 
 </manifest>
