@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -52,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         updateMenu();
@@ -83,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Update info based on login success
         if (requestCode == REQUEST_LOGIN) {
             if (resultCode == RESULT_OK) {
-
                 // Update username after delay (in ms)
                 mHandler.postDelayed(mUpdateUITimerTask, 1);
             }
@@ -101,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
         if(item.getTitle().equals("Bus Routes"))
         {
             Intent routesIntent = new Intent(this, ListRoutesActivity.class);
@@ -134,25 +131,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if(item.getTitle().equals("Login"))
         {
-
             Intent loginIntent = new Intent(this, LoginActivity.class);
             item.setTitle("Logout");
             startActivityForResult(loginIntent, REQUEST_LOGIN);
-
-
         }
         else if(item.getTitle().equals("Logout"))
         {
             UserInfoApplication.logout();
             updateMenu();
-            ((TextView) findViewById(R.id.nav_header_username)).setText("");
-
+            ((TextView) findViewById(R.id.nav_header_username)).setText("Welcome New User!");
+            Toast.makeText(getBaseContext(), "You have successfully logged out", Toast.LENGTH_LONG).show();
         }
 
-        /* had  change from case to if else since you have to have a contant expressions for comparisson
+        /* had change from case to if else since you have to have a constant expressions for comparison
         switch (item.getTitle() ) {
-
-
             case getString(R.string.bus_routes):
                 Intent routesIntent = new Intent(this, ListRoutesActivity.class);
                 startActivity(routesIntent);
@@ -183,9 +175,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     ((TextView)findViewById(R.id.nav_header_username)).setText("");
                 }
 
-                break;
-        }
-*/
+            break;
+        }*/
+
         // After clicking on an option, close the nav menu
         DrawerLayout dl = (DrawerLayout) findViewById(R.id.drawerLayout);
         if (dl.isDrawerOpen(GravityCompat.START)) {
@@ -199,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         updateMenu();
-
     }
 
     private void updateMenu()
@@ -225,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawerMenu.add("Bus Routes");
             drawerMenu.add("Bus List");
             drawerMenu.add("Login");
-
         }
     }
 }

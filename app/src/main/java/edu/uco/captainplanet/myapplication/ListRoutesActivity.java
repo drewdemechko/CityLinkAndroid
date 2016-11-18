@@ -47,22 +47,11 @@ public class ListRoutesActivity extends ListActivity {
         buses = new ArrayList<>();
         doesDataExist = false;
 
-        // used to find the status bar height
-        int resultHeight = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            float statusBarHeightDP = getResources().getDimension(resourceId); // get status_bar_height in density independent pixels
-            int statusBarHeightPX = (int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, statusBarHeightDP, getResources().getDisplayMetrics()); // convert DP to PX
-            resultHeight = getResources().getDisplayMetrics().heightPixels - statusBarHeightPX;
-        }
-
         final ProgressDialog progressDialog = new ProgressDialog(ListRoutesActivity.this,
                 R.style.CityLink);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Loading Bus Routes...");
         progressDialog.show();
-        //progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000);
@@ -250,19 +239,9 @@ public class ListRoutesActivity extends ListActivity {
             ex.printStackTrace();
         }
 
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.setTimeout(5000);
-        client.get("https://uco-edmond-bus.herokuapp.com/api/busservice/buses"
-            , new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray theStops) {
-                    setListRowItems();
-                    doesDataExist = true;
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    // do nothing
-                }
-            });
+        // Found all of the data
+        // lets display it
+        setListRowItems();
+        doesDataExist = true;
     }
 }

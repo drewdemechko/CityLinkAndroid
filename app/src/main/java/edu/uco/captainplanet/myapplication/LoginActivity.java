@@ -65,22 +65,11 @@ public class LoginActivity extends AppCompatActivity {
 
         _loginButton.setEnabled(false);
 
-        // used to find the status bar height
-        int resultHeight = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            float statusBarHeightDP = getResources().getDimension(resourceId); // get status_bar_height in density independent pixels
-            int statusBarHeightPX = (int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, statusBarHeightDP, getResources().getDisplayMetrics()); // convert DP to PX
-            resultHeight = getResources().getDisplayMetrics().heightPixels - statusBarHeightPX;
-        }
-
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.CityLink);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
-        //progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
 
         /*
          * Attempt to get JSON info
@@ -126,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 setResult(RESULT_OK, null);
                 UserInfoApplication.getInstance().setLoggedIn(true);
-                Toast.makeText(getBaseContext(), "Signup successful! You are now logged in", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Sign up successful! You are now logged in", Toast.LENGTH_LONG).show();
                 this.finish();
             }
         }
