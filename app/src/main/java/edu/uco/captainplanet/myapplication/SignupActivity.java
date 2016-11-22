@@ -27,6 +27,7 @@ public class SignupActivity extends AppCompatActivity {
 
     @InjectView(R.id.input_email) EditText _emailText;
     @InjectView(R.id.input_password) EditText _passwordText;
+    @InjectView(R.id.input_confirm_password) EditText _confirmPasswordText;
     @InjectView(R.id.btn_signup) Button _signupButton;
     @InjectView(R.id.link_login) TextView _loginLink;
 
@@ -62,22 +63,14 @@ public class SignupActivity extends AppCompatActivity {
 
         _signupButton.setEnabled(false);
 
-        // used to find the status bar height
-        int resultHeight = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            float statusBarHeightDP = getResources().getDimension(resourceId); // get status_bar_height in density independent pixels
-            int statusBarHeightPX = (int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, statusBarHeightDP, getResources().getDisplayMetrics()); // convert DP to PX
-            resultHeight = getResources().getDisplayMetrics().heightPixels - statusBarHeightPX;
-        }
-
+        // check if passwords match
+            //Toast.makeText(getBaseContext(), "Password fields do not match", Toast.LENGTH_LONG).show();
+            //_signupButton.setEnabled(true);
         final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.CityLink);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
-        //progressDialog.getWindow().setLayout(getResources().getDisplayMetrics().widthPixels, resultHeight);
 
         /*
          * Attempt to get JSON info
@@ -86,33 +79,33 @@ public class SignupActivity extends AppCompatActivity {
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000); // give enough time for client to get the JSON data
         client.get("http://uco-edmond-bus.herokuapp.com/api/userservice/users/create/"
-                + _emailText.getText().toString() + "/" + _passwordText.getText().toString() + "/client"
+                        + _emailText.getText().toString() + "/" + _passwordText.getText().toString() + "/client"
                 , new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // Called when response HTTP status is "200 OK"
-                try {
-                    if (response.getString("username").equals(_emailText.getText().toString())
-                            && response.getString("password").equals(_passwordText.getText().toString())) {
-                        auth = true;
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        // Called when response HTTP status is "200 OK"
+                        try {
+                            if (response.getString("username").equals(_emailText.getText().toString())
+                                    && response.getString("password").equals(_passwordText.getText().toString())) {
+                                auth = true;
+                            }
+                        } catch (JSONException ex) {
+                            ex.printStackTrace();
+                        }
                     }
-                } catch (JSONException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
+                });
 
         new android.os.Handler().postDelayed(
-            new Runnable() {
-                public void run() {
-                    if (auth) {
-                        onSignupSuccess();
-                    } else {
-                        onSignupFailed();
+                new Runnable() {
+                    public void run() {
+                        if (auth) {
+                            onSignupSuccess();
+                        } else {
+                            onSignupFailed();
+                        }
+                        progressDialog.dismiss();
                     }
-                    progressDialog.dismiss();
-                }
-            }, 5000);
+                }, 5000);
     }
 
 
@@ -124,7 +117,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG).show();
         _signupButton.setEnabled(true);
     }
 
@@ -133,19 +126,29 @@ public class SignupActivity extends AppCompatActivity {
 
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
+        String confirmPassword = _confirmPasswordText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+            _emailText.setError("Enter a valid email address");
             valid = false;
         } else {
             _emailText.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() || password.length() < 4 || password.length() > 12) {
+            _passwordText.setError("Between 4 and 12 alphanumeric characters");
             valid = false;
         } else {
             _passwordText.setError(null);
+        }
+
+        if (!password.equals(confirmPassword)) {
+            _passwordText.setError("Password field does not match");
+            _confirmPasswordText.setError("Confirm Password field does not match");
+            valid = false;
+        } else {
+            _passwordText.setError(null);
+            _confirmPasswordText.setError(null);
         }
 
         return valid;
