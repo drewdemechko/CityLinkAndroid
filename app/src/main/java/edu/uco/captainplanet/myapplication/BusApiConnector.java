@@ -56,7 +56,7 @@ public class BusApiConnector extends AsyncTask<Void, Void, ArrayList<Bus>>{
     @Override
     protected ArrayList<Bus> doInBackground(Void... voids) {
 
-        request = new HttpGet("https://uco-edmond-bus.herokuapp.com/api/busservice/buses");
+        request = new HttpGet("https://uco-edmond-bus.herokuapp.com/api/busservice/buses/active");
         HttpResponse httpResponse = null;
         try {
 

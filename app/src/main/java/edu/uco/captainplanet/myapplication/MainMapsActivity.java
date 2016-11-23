@@ -6,6 +6,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -55,6 +57,8 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 {
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    Bitmap busBitmap;
+    Bitmap benchBitmap;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -63,7 +67,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     private ArrayList<BusStop> stops;
     private ArrayList<Bus> buses;
     private Handler h = new Handler();
-    private final int delay = 5000; //milliseconds
+    private final int delay = 20000; //milliseconds
     private ArrayList<Marker> busMarkers;
     private Bus currentBus;
     private Marker currentMarker = null;
@@ -94,6 +98,8 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         me = this;
         mContext = this;
         busClosestExists = false;
+        busBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.shuttle);
+        benchBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bench);
     }
 
     public void setRoutes(JSONArray theRoutes)
@@ -200,7 +206,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                     currentStop.setInactive(theStops.getJSONObject(x).getBoolean("inactive"));
                 }*/
                 stops.add(currentStop);
-                mMap.addMarker(new MarkerOptions().position(new LatLng(currentStop.getLat(), currentStop.getLongi())).title(currentStop.getName()));
+                mMap.addMarker(new MarkerOptions().position(new LatLng(currentStop.getLat(), currentStop.getLongi())).title(currentStop.getName()).icon(BitmapDescriptorFactory.fromBitmap(benchBitmap)));
             }
 
 
@@ -496,6 +502,8 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
+        //change this to be in the middle of all Edmond bus stops
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(35.642507,-97.4596315),13));
     }
 
     @Override
@@ -602,13 +610,13 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     public void processFinish(ArrayList<Bus> output) {
         for(int x = 0 ; x < output.size() ; x++)
         {
-            currentBus = output.get(x);
-            currentMarker = currentBus.getMyMarker();
+            Bus currentBus = output.get(x);
+            Marker currentMarker = currentBus.getMyMarker();
             if(currentMarker != null)
             {
                 currentMarker.remove();
             }
-            currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLat(), currentBus.getLongi())).title("Time to Next Stop:" + currentBus.getTimeToNextStop()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+            currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLongi(), currentBus.getLat())).title("Time to Next Stop:" + currentBus.getTimeToNextStop()).icon(BitmapDescriptorFactory.fromBitmap(busBitmap)));
             currentBus.setMyMarker(currentMarker);
             buses.set(x,currentBus);
         }
