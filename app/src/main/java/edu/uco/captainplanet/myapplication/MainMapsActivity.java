@@ -403,10 +403,12 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            BusApiConnector performBackgroundTask = new BusApiConnector(mMap, routes,buses, me, mContext);
+                            BusApiConnector performBackgroundTask = new BusApiConnector(mMap,
+                                    routes, buses, me, mContext, busClosestExists);
                             // PerformBackgroundTask this class is the class that extends AsynchTask
 
                             performBackgroundTask.execute();
+                            busClosestExists = true;
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                         }
