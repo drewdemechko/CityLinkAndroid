@@ -82,10 +82,8 @@ public class FavoritesActivity extends AppCompatActivity {
 
     public boolean getUserFavorites()
     {
-        if(UserInfoApplication.getInstance().getFavorites().isEmpty()) {
-            txtFavorites.setText("Unable to pull data from server.");
-            return false;
-        }
+        if(UserInfoApplication.getInstance().getFavorites().isEmpty())
+            txtFavorites.setText("No Favorites Saved.");
         setUserFavorites();
         return true;
     }
