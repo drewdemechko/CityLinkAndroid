@@ -5,26 +5,9 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.uco.captainplanet.myapplication.MainActivity">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <Button
-            android:text="Open Maps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/googleMapsButton" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello World!" />
-
-    </LinearLayout>
+    tools:context="edu.uco.captainplanet.myapplication.MainActivity"
+    android:textAlignment="center"
+    android:layout_gravity="center_vertical|center_horizontal">
 
     <android.support.design.widget.NavigationView
         android:layout_width="wrap_content"
@@ -35,5 +18,18 @@
         android:layout_gravity="start"
         android:id="@+id/navigationView">
     </android.support.design.widget.NavigationView>
+
+
+    <android.widget.TextView android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:text="Welcome to \n CityLink \n Bus Tracking System"
+        tools:textAlignment="center"
+        android:gravity="center"
+        android:textSize="35sp"
+        android:id="@+id/frontSplash">
+
+
+
+    </android.widget.TextView>
 
 </android.support.v4.widget.DrawerLayout>

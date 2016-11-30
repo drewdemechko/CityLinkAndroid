@@ -18,12 +18,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ActionBarDrawerToggle toggle;
     Button mapsButton;
     private PendingIntent pendingIntent;
     private AlarmManager manager;
+    TextView splash;
 
     private static final int REQUEST_LOGIN = 1;
 
@@ -45,24 +50,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mapsButton = (Button) findViewById(R.id.googleMapsButton);
-
+        splash = (TextView) findViewById(R.id.frontSplash);
+        splash.setTextColor(getResources().getColor(R.color.cityLink_MedBlue));
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         updateMenu();
 
-        mapsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent update = new Intent(MainActivity.this, MainMapsActivity.class);
-                startActivityForResult(update, RESULT_OK);
-            }
-        });
+
 
         // Retrieve a PendingIntent that will perform a broadcast
         Intent notificationsIntent = new Intent(this, NotificationReceiver.class);
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Update info based on login success
         if (requestCode == REQUEST_LOGIN) {
             if (resultCode == RESULT_OK) {
+
                 // Update username after delay (in ms)
                 mHandler.postDelayed(mUpdateUITimerTask, 1);
             }
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
         if(item.getTitle().equals("Bus Routes"))
         {
             Intent routesIntent = new Intent(this, ListRoutesActivity.class);
@@ -131,9 +135,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if(item.getTitle().equals("Login"))
         {
+
             Intent loginIntent = new Intent(this, LoginActivity.class);
             item.setTitle("Logout");
             startActivityForResult(loginIntent, REQUEST_LOGIN);
+
+
         }
         else if(item.getTitle().equals("Logout"))
         {
@@ -143,8 +150,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(getBaseContext(), "You have successfully logged out", Toast.LENGTH_LONG).show();
         }
 
-        /* had change from case to if else since you have to have a constant expressions for comparison
+        /* had  change from case to if else since you have to have a contant expressions for comparisson
         switch (item.getTitle() ) {
+
+
             case getString(R.string.bus_routes):
                 Intent routesIntent = new Intent(this, ListRoutesActivity.class);
                 startActivity(routesIntent);
@@ -172,12 +181,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     UserInfoApplication.logout();
                     item.setTitle("Log In");
-                    ((TextView)findViewById(R.id.nav_header_username)).setText("");
                 }
 
-            break;
-        }*/
-
+                break;
+        }
+*/
         // After clicking on an option, close the nav menu
         DrawerLayout dl = (DrawerLayout) findViewById(R.id.drawerLayout);
         if (dl.isDrawerOpen(GravityCompat.START)) {
@@ -191,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         updateMenu();
+
     }
 
     private void updateMenu()
@@ -216,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawerMenu.add("Bus Routes");
             drawerMenu.add("Bus List");
             drawerMenu.add("Login");
+
         }
     }
 }
