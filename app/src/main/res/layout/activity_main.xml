@@ -22,11 +22,11 @@
 
     <android.widget.TextView android:layout_height="fill_parent"
         android:layout_width="fill_parent"
-        android:text="Welcome to \n CItyLink \n Bus Tracking System"
+        android:text="Welcome to \n CityLink \n Bus Tracking System"
         tools:textAlignment="center"
-        tools:textColor="@color/cityLink_MedBlue"
-        android:gravity="center_vertical"
-        android:textSize="32sp">
+        android:gravity="center"
+        android:textSize="35sp"
+        android:id="@+id/frontSplash">
 
 
 

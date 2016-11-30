@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Button mapsButton;
     private PendingIntent pendingIntent;
     private AlarmManager manager;
+    TextView splash;
 
     private static final int REQUEST_LOGIN = 1;
 
@@ -47,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        splash = (TextView) findViewById(R.id.frontSplash);
+        splash.setTextColor(getResources().getColor(R.color.cityLink_MedBlue));
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
