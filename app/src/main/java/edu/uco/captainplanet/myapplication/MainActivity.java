@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mapsButton = (Button) findViewById(R.id.googleMapsButton);
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
@@ -61,12 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         updateMenu();
 
-        mapsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent update = new Intent(MainActivity.this, MainMapsActivity.class);
-                startActivityForResult(update, RESULT_OK);
-            }
-        });
+
 
         // Retrieve a PendingIntent that will perform a broadcast
         Intent notificationsIntent = new Intent(this, NotificationReceiver.class);
