@@ -14,22 +14,27 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
 
 public class AccountActivity extends AppCompatActivity {
 
     private static boolean auth = false;
 
-    @InjectView(R.id.input_emailChange) EditText _emailText;
-    @InjectView(R.id.input_passwordChange) EditText _passwordText;
-    @InjectView(R.id.input_verifyPasswordChange) EditText _verifyPasswordText;
-    @InjectView(R.id.btn_updateAccount) Button _updateButton;
+    private EditText _emailText;
+    private EditText _passwordText;
+    private EditText _verifyPasswordText;
+    private Button _updateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+
+        _emailText = (EditText)findViewById(R.id.input_emailChange);
+        _passwordText = (EditText)findViewById(R.id.input_passwordChange);
+        _verifyPasswordText = (EditText)findViewById(R.id.input_verifyPasswordChange);
+        _updateButton = (Button)findViewById(R.id.btn_updateAccount);
+
 
         _updateButton = (Button)  findViewById(R.id.btn_updateAccount);
 
@@ -62,9 +67,8 @@ public class AccountActivity extends AppCompatActivity {
         */
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(5000); // give enough time for client to get the JSON data
-        client.get("https://uco-edmond-bus.herokuapp.com/api/userservice/users/edit/"
-                        + _emailText.getText().toString() + "/" + UserInfoApplication.getInstance().getPassword() +
-                            "/" + _passwordText.getText().toString()
+        client.get("https://uco-edmond-bus.herokuapp.com/api/userservice/users/editClient/"
+                        + _emailText.getText().toString() + "/" + _passwordText.getText().toString()
                 , new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -128,7 +132,7 @@ public class AccountActivity extends AppCompatActivity {
             _passwordText.setError(null);
         }
 
-        if (verifyPassword != password) {
+        if (!(verifyPassword.equals(password))) {
             _verifyPasswordText.setError("Passwords do not match");
             valid = false;
         } else {
