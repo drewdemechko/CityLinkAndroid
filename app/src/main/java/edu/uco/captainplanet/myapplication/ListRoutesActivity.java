@@ -1,12 +1,9 @@
 package edu.uco.captainplanet.myapplication;
 
-import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ListView;
@@ -54,7 +51,7 @@ public class ListRoutesActivity extends ListActivity {
         progressDialog.show();
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.setTimeout(5000);
+        client.setTimeout(8000);
         client.get("https://uco-edmond-bus.herokuapp.com/api/busstopservice/stops"
             , new JsonHttpResponseHandler() {
                 @Override
@@ -85,7 +82,7 @@ public class ListRoutesActivity extends ListActivity {
                     }
                     progressDialog.dismiss();
                 }
-            }, 5000);
+            }, 8250);
     }
 
     @Override
@@ -151,7 +148,7 @@ public class ListRoutesActivity extends ListActivity {
         }
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.setTimeout(5000);
+        client.setTimeout(8000);
         client.get("https://uco-edmond-bus.herokuapp.com/api/routeservice/routes"
             , new JsonHttpResponseHandler() {
                 @Override
@@ -189,7 +186,7 @@ public class ListRoutesActivity extends ListActivity {
         }
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.setTimeout(5000);
+        client.setTimeout(8000);
         client.get("https://uco-edmond-bus.herokuapp.com/api/busservice/buses"
             , new JsonHttpResponseHandler() {
                 @Override
