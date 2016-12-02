@@ -19,12 +19,8 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
@@ -66,7 +62,6 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 {
 
     private static final int REQUEST_LOGIN = 1;
-    ActionBarDrawerToggle toggle;
     Button mapsButton;
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -109,16 +104,6 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_maps);
 
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        updateMenu();
-
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -141,7 +126,6 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-        updateMenu();
     }
 
     public void setRoutes(JSONArray theRoutes)
@@ -164,20 +148,9 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 if(routeJSON.has("busStops"))
                 {
                     currentRoute.setOrderedStops(routeJSON.getJSONArray("busStops"), stops);
-                }/*
-                if(theStops.getJSONObject(x).has("inactive")) {
-                    currentStop.setInactive(theStops.getJSONObject(x).getBoolean("inactive"));
-                }*/
+                }
                 routes.addRoute(currentRoute);
             }
-
-
-
-
-
-
-
-
         } catch (JSONException ex) {
 
             ex.printStackTrace();
@@ -185,34 +158,6 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
         }
 
         callAsynchronousTask();
-        /*
-        h.postDelayed(new Runnable(){
-            public void run(){
-                AsyncHttpClient client = new AsyncHttpClient();
-                client.setTimeout(5000);
-                client.get("https://uco-edmond-bus.herokuapp.com/api/busservice/buses"
-                        , new JsonHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONArray theBuses) {
-                                setBuses(theBuses);
-
-
-                            }
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
-                            }
-
-
-
-                        });
-
-
-
-                h.postDelayed(this, delay);
-            }
-        }, delay);
-        */
     }
 
     public void setStops(JSONArray theStops)
@@ -227,15 +172,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 if(theStops.getJSONObject(x).has("name"))
                 {
                     currentStop.setName(theStops.getJSONObject(x).getString("name"));
-                }/*
-                if(theStops.getJSONObject(x).has("firstcrossstreet"))
-                {
-                    currentStop.setFirstCrossStreet(theStops.getJSONObject(x).getString("firstcrossstreet"));
                 }
-                if(theStops.getJSONObject(x).has("secondcrossstreet"))
-                {
-                    currentStop.setSecondCrossStreet(theStops.getJSONObject(x).getString("secondcrossstreet"));
-                }*/
                 if(theStops.getJSONObject(x).has("latitude"))
                 {
                     currentStop.setLat(theStops.getJSONObject(x).getDouble("latitude"));
@@ -243,10 +180,7 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
                 if(theStops.getJSONObject(x).has("longitude"))
                 {
                     currentStop.setLongi(theStops.getJSONObject(x).getDouble("longitude"));
-                }/*
-                if(theStops.getJSONObject(x).has("inactive")) {
-                    currentStop.setInactive(theStops.getJSONObject(x).getBoolean("inactive"));
-                }*/
+                }
                 stops.add(currentStop);
                 mMap.addMarker(new MarkerOptions().position(new LatLng(currentStop.getLat(), currentStop.getLongi())).title(currentStop.getName()).icon(BitmapDescriptorFactory.fromBitmap(benchBitmap)));
             }
@@ -652,43 +586,15 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 
     @Override
     public void processFinish(ArrayList<Bus> output) {
-        for(int x = 0 ; x < output.size() ; x++)
-        {
+        for (int x = 0; x < output.size(); x++) {
             Bus currentBus = output.get(x);
             Marker currentMarker = currentBus.getMyMarker();
-            if(currentMarker != null)
-            {
+            if (currentMarker != null) {
                 currentMarker.remove();
             }
             currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(currentBus.getLongi(), currentBus.getLat())).title("Time to Next Stop:" + currentBus.getTimeToNextStop()).icon(BitmapDescriptorFactory.fromBitmap(busBitmap)));
             currentBus.setMyMarker(currentMarker);
-            buses.set(x,currentBus);
-        }
-    }
-
-    private void updateMenu()
-    {
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        Menu drawerMenu = navigationView.getMenu();
-        drawerMenu.clear();
-        if(UserInfoApplication.getInstance().isLoggedIn())
-        {
-            drawerMenu.add("Bus Map");
-            drawerMenu.add("Bus Routes");
-            drawerMenu.add("Bus List");
-            drawerMenu.add("Favorites");
-            drawerMenu.add("My Account");
-            drawerMenu.add("Settings");
-            drawerMenu.add("Logout");
-        }
-        else
-        {
-            drawerMenu.add("Bus Map");
-            drawerMenu.add("Bus Routes");
-            drawerMenu.add("Bus List");
-            drawerMenu.add("Login");
+            buses.set(x, currentBus);
         }
     }
 
@@ -705,64 +611,11 @@ public class MainMapsActivity extends FragmentActivity implements OnMapReadyCall
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (toggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        if(item.getTitle().equals("Bus Routes"))
-        {
-            Intent routesIntent = new Intent(this, ListRoutesActivity.class);
-            startActivity(routesIntent);
-        }
-        else if(item.getTitle().equals("Bus Map"))
-        {
-            //Intent update = new Intent(MainActivity.this, MainMapsActivity.class);
-            //startActivityForResult(update, RESULT_OK);
-        }
-        else if(item.getTitle().equals("Bus List"))
-        {
-            Intent accountIntent = new Intent(this, BusListActivity.class);
-            startActivity(accountIntent);
-        }
-        else if(item.getTitle().equals("Favorites"))
-        {
-            Intent favoritesIntent = new Intent(this, FavoritesActivity.class);
-            startActivity(favoritesIntent);
-        }
-        else if(item.getTitle().equals("My Account"))
-        {
-            Intent accountIntent = new Intent(this, AccountActivity.class);
-            startActivity(accountIntent);
-        }
-        else if(item.getTitle().equals("Settings"))
-        {
-            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
-        }
-        else if(item.getTitle().equals("Login"))
-        {
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            item.setTitle("Logout");
-            startActivityForResult(loginIntent, REQUEST_LOGIN);
-        }
-        else if(item.getTitle().equals("Logout"))
-        {
-            UserInfoApplication.logout();
-            updateMenu();
-            ((TextView) findViewById(R.id.nav_header_username)).setText("Welcome New User!");
-            Toast.makeText(getBaseContext(), "You have successfully logged out", Toast.LENGTH_LONG).show();
-        }
-
-        DrawerLayout dl = (DrawerLayout) findViewById(R.id.drawerLayout);
-        if (dl.isDrawerOpen(GravityCompat.START)) {
-            dl.closeDrawer(GravityCompat.START);
-        }
-
         return false;
     }
 }
